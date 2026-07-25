@@ -4,6 +4,57 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     //==================================================
+    // MOVIMIENTO (PROVISIONAL)
+    //==================================================
+
+    [Header("Movimiento Provisional")]
+
+    [SerializeField]
+    private float velocidadMovimiento = 6f;
+
+    private Rigidbody2D rb;
+
+    private Vector2 direccionMovimiento;
+
+    //==================================================
+    // DIRECCIÓN (PROVISIONAL)
+    //==================================================
+
+    private Vector2 ultimaDireccionMovimiento = Vector2.right;
+
+    private enum DireccionCardinal
+    {
+        Arriba,
+        Abajo,
+        Izquierda,
+        Derecha
+    }
+
+    private DireccionCardinal ultimaDireccionCardinal =
+        DireccionCardinal.Derecha;
+
+    [SerializeField]
+    private float distanciaTeleport = 4f;
+
+    [SerializeField]
+    private GameObject prefabMuro;
+
+    [SerializeField]
+    private float distanciaMuro = 1.2f;
+
+    const float xmin = -4.36f;
+    const float xmax = 4.36f;
+
+    const float ymin = -3.64f;
+    const float ymax = 3.64f;
+
+    [SerializeField]
+    private float anchoMuro = 2.114f;
+
+    [SerializeField]
+    private float altoMuro = 1f;
+
+    //==================================================
     // VIDA
     //==================================================
 
@@ -193,6 +244,75 @@ public class Player : MonoBehaviour
         }
     }
 
+    //==================================================
+    // MOVIMIENTO PROVISIONAL
+    //==================================================
+
+    private void ActualizarMovimiento()
+    {
+        direccionMovimiento.x = Input.GetAxisRaw("Horizontal");
+        direccionMovimiento.y = Input.GetAxisRaw("Vertical");
+
+        direccionMovimiento.Normalize();
+
+        rb.linearVelocity = direccionMovimiento * velocidadMovimiento;
+
+        if (direccionMovimiento != Vector2.zero)
+        {
+            ultimaDireccionMovimiento = direccionMovimiento;
+
+            if (Mathf.Abs(direccionMovimiento.x) >
+                Mathf.Abs(direccionMovimiento.y))
+            {
+                if (direccionMovimiento.x > 0)
+                    ultimaDireccionCardinal = DireccionCardinal.Derecha;
+                else
+                    ultimaDireccionCardinal = DireccionCardinal.Izquierda;
+            }
+            else
+            {
+                if (direccionMovimiento.y > 0)
+                    ultimaDireccionCardinal = DireccionCardinal.Arriba;
+                else
+                    ultimaDireccionCardinal = DireccionCardinal.Abajo;
+            }
+        }
+    }
+
+    private Vector2 AjustarPosicionMuro(Vector2 posicion, bool horizontal)
+    {
+        if (horizontal)
+        {
+            float mitadLargo = anchoMuro * 0.5f;
+
+            posicion.x = Mathf.Clamp(
+                posicion.x,
+                xmin + mitadLargo,
+                xmax - mitadLargo);
+
+            posicion.y = Mathf.Clamp(
+                posicion.y,
+                ymin,
+                ymax);
+        }
+        else
+        {
+            float mitadLargo = anchoMuro * 0.5f;
+
+            posicion.x = Mathf.Clamp(
+                posicion.x,
+                xmin,
+                xmax);
+
+            posicion.y = Mathf.Clamp(
+                posicion.y,
+                ymin + mitadLargo,
+                ymax - mitadLargo);
+        }
+
+        return posicion;
+    }
+
     void Start()
     {
 
@@ -200,6 +320,8 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
+        rb = GetComponent<Rigidbody2D>(); //Provisional
+
         if (iconoTeleport != null)
             colorOriginalTeleport = iconoTeleport.color;
 
@@ -221,6 +343,12 @@ public class Player : MonoBehaviour
 
         // Se implementará cuando
         // llegue el Player definitivo.
+
+        //--------------------------
+        // MOVIMIENTO (PROVISIONAL)
+        //--------------------------
+
+        ActualizarMovimiento();
 
         //--------------------------
         // TELETRANSPORTE
@@ -393,9 +521,18 @@ public class Player : MonoBehaviour
 
         teleportDisponible = false;
 
-        ActualizarIconosHabilidades();
-
         cooldownTeleport = cooldownGeneral;
+
+        Vector2 destino =
+        (Vector2)transform.position +
+        ultimaDireccionMovimiento * distanciaTeleport;
+
+        destino.x = Mathf.Clamp(destino.x, xmin, xmax);
+        destino.y = Mathf.Clamp(destino.y, ymin, ymax);
+
+        transform.position = destino;
+
+        ActualizarIconosHabilidades();
 
         /*
             AQUÍ SE IMPLEMENTARÁ
@@ -568,11 +705,66 @@ public class Player : MonoBehaviour
 
         muroDisponible = false;
 
-        ActualizarIconosHabilidades();
-
         muroActivo = true;
 
         cooldownMuro = cooldownGeneral;
+
+        Vector2 offset = Vector2.zero;
+
+        float rotacion = 0f;
+
+        switch (ultimaDireccionCardinal)
+        {
+            case DireccionCardinal.Arriba:
+
+                offset = Vector2.up * distanciaMuro;
+                rotacion = 0f;
+                break;
+
+            case DireccionCardinal.Abajo:
+
+                offset = Vector2.down * distanciaMuro;
+                rotacion = 0f;
+                break;
+
+            case DireccionCardinal.Izquierda:
+
+                offset = Vector2.left * distanciaMuro;
+                rotacion = 90f;
+                break;
+
+            case DireccionCardinal.Derecha:
+
+                offset = Vector2.right * distanciaMuro;
+                rotacion = 90f;
+                break;
+        }
+
+        Vector2 posicionFinal = (Vector2)transform.position + offset;
+
+        bool horizontal =
+            (ultimaDireccionCardinal == DireccionCardinal.Arriba ||
+             ultimaDireccionCardinal == DireccionCardinal.Abajo);
+
+        posicionFinal =
+            AjustarPosicionMuro(
+                posicionFinal,
+                horizontal);
+
+        GameObject nuevoMuro =
+            Instantiate(
+                prefabMuro,
+                posicionFinal,
+                Quaternion.Euler(0f, 0f, rotacion));
+
+        muroActual =
+            nuevoMuro.GetComponent<Muro>();
+
+        vidaActualMuro = vidaInicialMuro;
+
+        posicionMuro = muroActual.transform.position;
+
+        ActualizarIconosHabilidades();
 
         /*
             AQUÍ SE IMPLEMENTARÁ LA CREACIÓN DEL MURO.

@@ -34,6 +34,8 @@ public class SistemaEventosNivel3 : MonoBehaviour
     private bool overdriveActivo = false;
     private bool blackoutActivo = false;
 
+    public Transform player;
+
     // 0 = Ninguna
     // 1 = Entrada
     // 2 = Activo
@@ -68,6 +70,21 @@ public class SistemaEventosNivel3 : MonoBehaviour
         return tiempoFase;
     }
 
+    private void ActualizarBlackout()
+    {
+        if (!blackoutActivo)
+            return;
+
+        if (player == null)
+            return;
+
+        blackoutLight.transform.position =
+            new Vector3(
+                player.position.x,
+                player.position.y,
+                blackoutLight.transform.position.z);
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -87,7 +104,7 @@ public class SistemaEventosNivel3 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        ActualizarBlackout();
     }
 
     //==========================================
@@ -483,6 +500,8 @@ public class SistemaEventosNivel3 : MonoBehaviour
             PlayerPrefs.GetFloat(
                 prefijoEvento + "FreeformIntensity",
                 0f);
+
+        ActualizarBlackout();
     }
 
     //==========================================
