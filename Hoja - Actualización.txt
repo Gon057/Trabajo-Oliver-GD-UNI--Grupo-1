@@ -23,5 +23,7 @@ Todo el GitHub se actualizo, este es el único archivo que no pertenece a la car
 Corrección de Detalles Visuales con Canvas
 ----24/07/2026(Madrugada)----
 Agregado de Canvas para Tema de Vidas de Player y el Game Over. Balanceo y generación dinámica de generadores de discos
-----24/07/2026(Proximamente)----
-Coordinar detalles de player con eventos y ver el tema de cámara... Y discutir con Gonzalo para los diseños.
+----25/07/2026(Madrugada)----
+Detalles de coordinación de eventos con Player terminados y acabados. Prototipo de Player en nivel 1, con movimiento, habilidades y choque hecho.
+----25/07/2026(Proximamente)----
+Decidir futuros pasos restantes para programación...
