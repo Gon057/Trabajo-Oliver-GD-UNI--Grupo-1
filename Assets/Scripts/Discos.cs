@@ -42,11 +42,11 @@ public class Discos : MonoBehaviour
     public float tiempoExplosion = 5f;
     public float duracionExplosion = 0.4f;
     public float duracionPostExplosion = 0.4f;
-    public float radioExplosion = 1.5f;
+    public float radioExplosion = 2.5f;
     private bool explosivoPausado = false;
 
     [Header("Venenoso")]
-    public float duracionVeneno = 3f;
+    public float duracionVeneno = 5f;
     public float multiplicadorVeneno = 0.5f;
 
     //==========================================
@@ -417,15 +417,13 @@ public class Discos : MonoBehaviour
         // PLAYER
         //==========================
 
-        //Player player = objetivo.GetComponent<Player>();
+        Player player = objetivo.GetComponent<Player>();
 
-        //if (player != null)
-        //{
-        //    if (!player.TieneInmunidad())
-        //    {
-        //        player.RecibirDanio(danoContacto);
-        //    }
-        //}
+        if (player != null)
+        {
+            player.PerderVida(danoContacto);
+        }
+
 
         //==========================
         // MURO
@@ -444,14 +442,14 @@ public class Discos : MonoBehaviour
         if (objetivo == null)
             return;
 
-        //Player player = jugador.GetComponent<Player>();
+        Player player = objetivo.GetComponent<Player>();
 
-        //if (player == null)
-            //return;
+        if (player == null)
+            return;
 
-        //player.AplicarVeneno(
-            //duracionVeneno,
-            //multiplicadorVeneno);
+        player.AplicarVeneno(
+            duracionVeneno,
+            multiplicadorVeneno);
     }
 
     void AplicarDanioExplosion()
@@ -476,10 +474,55 @@ public class Discos : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log("Entró Trigger con: " + collision.name +
+              " Tag: " + collision.tag);
+
+        // Solo nos interesa el Player
+        if (!collision.CompareTag("Player"))
+            return;
+
+        switch (tipo)
+        {
+            case TipoDisco.Normal:
+
+                InfligirDanio(collision.gameObject);
+                break;
+
+            case TipoDisco.Rapido:
+
+                InfligirDanio(collision.gameObject);
+                break;
+
+            case TipoDisco.Pesado:
+
+                InfligirDanio(collision.gameObject);
+                break;
+
+            case TipoDisco.Venenoso:
+
+                // Daño normal
+                InfligirDanio(collision.gameObject);
+
+                // Además aplica veneno
+                InfligirVeneno(collision.gameObject);
+                break;
+
+            case TipoDisco.Explosivo:
+
+                // Solo daña por contacto mientras no haya explotado
+                if (estadoExplosivo == EstadoExplosivo.Normal)
+                {
+                    InfligirDanio(collision.gameObject);
+                }
+                break;
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.gameObject.CompareTag("Player") &&
-        !collision.gameObject.CompareTag("Muro"))
+        if (!collision.gameObject.CompareTag("Muro"))
             return;
 
         switch (tipo)
@@ -506,12 +549,6 @@ public class Discos : MonoBehaviour
 
                 // Siempre hace daño
                 InfligirDanio(collision.gameObject);
-
-                // Solo el Player recibe veneno
-                if (collision.gameObject.CompareTag("Player"))
-                {
-                    InfligirVeneno(collision.gameObject);
-                }
 
                 break;
 
@@ -668,6 +705,34 @@ public class Discos : MonoBehaviour
         if (estadoExplosivo == EstadoExplosivo.Normal)
         {
             ActualizarVelocidad();
+        }
+    }
+
+    public void GolpearPlayer(GameObject player)
+    {
+        switch (tipo)
+        {
+            case TipoDisco.Normal:
+                InfligirDanio(player);
+                break;
+
+            case TipoDisco.Rapido:
+                InfligirDanio(player);
+                break;
+
+            case TipoDisco.Pesado:
+                InfligirDanio(player);
+                break;
+
+            case TipoDisco.Venenoso:
+                InfligirDanio(player);
+                InfligirVeneno(player);
+                break;
+
+            case TipoDisco.Explosivo:
+                if (estadoExplosivo == EstadoExplosivo.Normal)
+                    InfligirDanio(player);
+                break;
         }
     }
 }

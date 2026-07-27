@@ -4,10 +4,10 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     //==================================================
-    // MOVIMIENTO (PROVISIONAL)
+    // MOVIMIENTO
     //==================================================
 
-    [Header("Movimiento Provisional")]
+    [Header("Movimiento")]
 
     [SerializeField]
     private float velocidadMovimiento = 6f;
@@ -16,11 +16,27 @@ public class Player : MonoBehaviour
 
     private Vector2 direccionMovimiento;
 
+    //--------------------------
+    // VENENO
+    //--------------------------
+
+    private bool envenenado = false;
+
+    [SerializeField]
+    private float tiempoVeneno = 0f;
+
+    [SerializeField]
+    private float velocidadOriginal = 6f;
+
+    private float multiplicadorVeneno = 1f;
+
     //==================================================
-    // DIRECCIÓN (PROVISIONAL)
+    // DIRECCIÓN
     //==================================================
 
     private Vector2 ultimaDireccionMovimiento = Vector2.right;
+
+    private Vector2 posicionInicial;
 
     private enum DireccionCardinal
     {
@@ -42,17 +58,14 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float distanciaMuro = 1.2f;
 
-    const float xmin = -4.36f;
-    const float xmax = 4.36f;
+    const float xmin = -9.85f;//se debe cambiar
+    const float xmax = 9.85f;//se debe cambiar
 
-    const float ymin = -3.64f;
-    const float ymax = 3.64f;
+    const float ymin = -7.0f;//se debe cambiar
+    const float ymax = 7.0f;//se debe cambiar
 
     [SerializeField]
     private float anchoMuro = 2.114f;
-
-    [SerializeField]
-    private float altoMuro = 1f;
 
     //==================================================
     // VIDA
@@ -64,6 +77,15 @@ public class Player : MonoBehaviour
     private int vidasMaximas = 3;
 
     private int vidasActuales;
+
+    [SerializeField]
+    private float duracionInmunidad = 2f;
+
+    private bool esInmune = false;
+    private float tiempoInmunidad = 0f;
+
+    private SpriteRenderer spriteRenderer;
+    private Color colorOriginal;
 
 
     //==================================================
@@ -158,35 +180,8 @@ public class Player : MonoBehaviour
     public System.Action OnPlayerMuerto;
 
     //==================================================
-    // UNITY
+    // ICONO-HABILIDADES
     //==================================================
-    public void InicializarJugador()
-    {
-        // Vida
-        InicializarVidas();
-
-        // Teletransporte
-        teleportDisponible = true;
-        cooldownTeleport = 0f;
-
-        // Ralentización
-        slowDisponible = true;
-        cooldownSlow = 0f;
-        slowActivo = false;
-        tiempoRestanteSlow = 0f;
-
-        // Muro
-        muroDisponible = true;
-        cooldownMuro = 0f;
-        muroActivo = false;
-
-        vidaActualMuro = 0;
-        posicionMuro = Vector2.zero;
-        muroActual = null;
-
-        // Mostrar correctamente los iconos.
-        ActualizarIconosHabilidades();
-    }
 
     private void ActualizarIcono(Image icono, Color colorOriginal, bool disponible, float cooldown)
     {
@@ -230,23 +225,14 @@ public class Player : MonoBehaviour
             cooldownMuro);
     }
 
-    public void PausarJugador()
-    {
-        jugadorPausado = true;
-    }
-
-    public void ReanudarJugador()
-    {
-        jugadorPausado = false;
-        if (slowActivo && generador != null)
-        {
-            generador.ActivarRalentizacion(0.5f);
-        }
-    }
-
     //==================================================
-    // MOVIMIENTO PROVISIONAL
+    // MOVIMIENTO
     //==================================================
+
+    public void RestaurarPosicionInicial()
+    {
+        transform.position = posicionInicial;
+    }
 
     private void ActualizarMovimiento()
     {
@@ -313,6 +299,55 @@ public class Player : MonoBehaviour
         return posicion;
     }
 
+    //==================================================
+    // UNITY
+    //==================================================
+    public void InicializarJugador()
+    {
+        // Vida
+        InicializarVidas();
+
+        // Teletransporte
+        teleportDisponible = true;
+        cooldownTeleport = 0f;
+
+        // Ralentización
+        slowDisponible = true;
+        cooldownSlow = 0f;
+        slowActivo = false;
+        tiempoRestanteSlow = 0f;
+
+        // Muro
+        muroDisponible = true;
+        cooldownMuro = 0f;
+        muroActivo = false;
+
+        vidaActualMuro = 0;
+        posicionMuro = Vector2.zero;
+        if (muroActual != null)
+        {
+            Destroy(muroActual.gameObject);
+        }
+        muroActual = null;
+
+        // Mostrar correctamente los iconos.
+        ActualizarIconosHabilidades();
+    }
+
+    public void PausarJugador()
+    {
+        jugadorPausado = true;
+    }
+
+    public void ReanudarJugador()
+    {
+        jugadorPausado = false;
+        if (slowActivo && generador != null)
+        {
+            generador.ActivarRalentizacion(0.5f);
+        }
+    }
+
     void Start()
     {
 
@@ -330,6 +365,15 @@ public class Player : MonoBehaviour
 
         if (iconoMuro != null)
             colorOriginalMuro = iconoMuro.color;
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            colorOriginal = spriteRenderer.color;
+        }
+
+        posicionInicial = transform.position;
     }
 
     void Update()
@@ -341,8 +385,7 @@ public class Player : MonoBehaviour
         // MOVIMIENTO
         //--------------------------
 
-        // Se implementará cuando
-        // llegue el Player definitivo.
+        ActualizarInmunidad();
 
         //--------------------------
         // MOVIMIENTO (PROVISIONAL)
@@ -350,11 +393,11 @@ public class Player : MonoBehaviour
 
         ActualizarMovimiento();
 
+        ActualizarVeneno();
+
         //--------------------------
         // TELETRANSPORTE
         //--------------------------
-
-        //ActualizarTeleport();
 
         ActualizarCooldownTeleport();
 
@@ -436,12 +479,26 @@ public class Player : MonoBehaviour
     }
 
     // El jugador recibe daño.
-    public void PerderVida()
+    public void PerderVida(int cantidad)
     {
+        if (esInmune)
+            return;
+
         if (vidasActuales <= 0)
             return;
 
-        vidasActuales--;
+        vidasActuales -= cantidad;
+
+        if (vidasActuales < 0)
+            vidasActuales = 0;
+
+        esInmune = true;
+        tiempoInmunidad = duracionInmunidad;
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.cyan;
+        }
 
         Debug.Log(
             "Player -> Vida perdida. Vidas restantes: "
@@ -487,30 +544,27 @@ public class Player : MonoBehaviour
         Debug.Log("Player derrotado.");
 
         OnPlayerMuerto?.Invoke();
-        // TODO:
-        // Avisar al Nivel.
-        // Detener habilidades.
-        // Mostrar Game Over.
+    }
+
+    private void ActualizarInmunidad()
+    {
+        if (!esInmune)
+            return;
+
+        tiempoInmunidad -= Time.deltaTime;
+
+        if (tiempoInmunidad <= 0f)
+        {
+            esInmune = false;
+
+            if (spriteRenderer != null)
+                spriteRenderer.color = colorOriginal;
+        }
     }
 
     //==================================================
     // TELETRANSPORTE
     //==================================================
-
-    /*
-        FUNCIONAMIENTO GENERAL
-
-        - El jugador presiona la tecla 1.
-
-        - Si la habilidad está disponible:
-            • Se activa el teletransporte.
-            • Comienza el cooldown.
-            • La habilidad deja de estar disponible.
-
-        - Si el cooldown no ha terminado:
-            • No ocurre nada.
-    */
-
 
     public void ActivarTeleport()
     {
@@ -533,21 +587,6 @@ public class Player : MonoBehaviour
         transform.position = destino;
 
         ActualizarIconosHabilidades();
-
-        /*
-            AQUÍ SE IMPLEMENTARÁ
-            EL TELETRANSPORTE.
-
-            Pasos futuros:
-
-            1. Obtener dirección.
-
-            2. Calcular nueva posición.
-
-            3. Validar límites.
-
-            4. Mover jugador.
-        */
 
         Debug.Log("Player -> Teletransporte activado.");
     }
@@ -573,38 +612,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
-    /*
-        GUARDAR TELETRANSPORTE
-
-        Se guardará:
-
-            teleportDisponible
-
-            cooldownTeleport
-    */
-
-
-    /*
-        RESTAURAR TELETRANSPORTE
-
-        Al cargar una partida:
-
-            teleportDisponible
-
-            cooldownTeleport
-
-        volverán exactamente al estado
-        en que fueron guardados.
-    */
-
-    /*
-        Nota: El teletransporte NO dependerá de ningún otro script.
-
-        Toda su lógica será administrada por Player.cs.
-
-        Únicamente modificará la posición del jugador.
-    */
 
     //==================================================
     // RALENTIZAR
@@ -766,28 +773,6 @@ public class Player : MonoBehaviour
 
         ActualizarIconosHabilidades();
 
-        /*
-            AQUÍ SE IMPLEMENTARÁ LA CREACIÓN DEL MURO.
-
-            Pasos futuros:
-
-            1. Obtener la dirección actual del Player.
-
-            2. Calcular una posición delante del Player.
-
-            3. Instanciar el prefab del muro.
-
-            4. Guardar la referencia:
-
-                    muroActual = muroInstanciado.GetComponent<Muro>();
-
-            5. Inicializar:
-
-                    vidaActualMuro = vidaInicialMuro;
-
-                    posicionMuro = muroActual.transform.position;
-        */
-
         Debug.Log("Player -> Muro colocado.");
     }
 
@@ -835,6 +820,40 @@ public class Player : MonoBehaviour
         }
     }
 
+    //--------------------------
+    // VENENO
+    //--------------------------
+
+    public void AplicarVeneno(float duracion, float multiplicador)
+    {
+        envenenado = true;
+
+        tiempoVeneno = duracion;
+
+        multiplicadorVeneno = multiplicador;
+
+        velocidadMovimiento = velocidadOriginal * multiplicadorVeneno;
+
+        Debug.Log("Player envenenado.");
+    }
+
+    private void ActualizarVeneno()
+    {
+        if (!envenenado)
+            return;
+
+        tiempoVeneno -= Time.deltaTime;
+
+        if (tiempoVeneno <= 0f)
+        {
+            envenenado = false;
+
+            velocidadMovimiento = velocidadOriginal;
+
+            Debug.Log("Veneno finalizado.");
+        }
+    }
+
     //==================================================
     // GUARDAR
     //==================================================
@@ -853,29 +872,34 @@ public class Player : MonoBehaviour
         // POSICIÓN
         //--------------------------
 
-        // TODO:
-        // Guardar la posición actual del Player.
-        //
-        // PlayerPrefs.SetFloat(
-        //     prefijoGuardado + "PosX",
-        //     transform.position.x);
-        //
-        // PlayerPrefs.SetFloat(
-        //     prefijoGuardado + "PosY",
-        //     transform.position.y);
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "PosX",
+            transform.position.x);
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "PosY",
+            transform.position.y);
+
+        //--------------------------
+        // DIRECCIÓN
+        //--------------------------
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "DireccionX",
+            ultimaDireccionMovimiento.x);
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "DireccionY",
+            ultimaDireccionMovimiento.y);
+
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "DireccionCardinal",
+            (int)ultimaDireccionCardinal);
 
         //--------------------------
         // TELETRANSPORTE
         //--------------------------
 
-        // TODO:
-        // Guardar:
-        //
-        // - cooldownTeleport
-        // - teleportDisponible
-        // - dirección actual
-        // - cualquier dato necesario
-        // para restaurar el movimiento.
         PlayerPrefs.SetInt(
             prefijoGuardado + "TeleportDisponible",
             teleportDisponible ? 1 : 0);
@@ -924,17 +948,52 @@ public class Player : MonoBehaviour
             prefijoGuardado + "VidaMuro",
             vidaActualMuro);
 
-        // TODO:
-        // Cuando el sistema de colocación del muro
-        // esté terminado también se guardará:
-        //
-        // PlayerPrefs.SetFloat(
-        //     prefijoGuardado + "MuroPosX",
-        //     posicionMuro.x);
-        //
-        // PlayerPrefs.SetFloat(
-        //     prefijoGuardado + "MuroPosY",
-        //     posicionMuro.y);
+        //--------------------------
+        // POSICIÓN DEL MURO
+        //--------------------------
+
+        if (muroActivo && muroActual != null)
+        {
+            PlayerPrefs.SetFloat(
+                prefijoGuardado + "MuroPosX",
+                muroActual.transform.position.x);
+
+            PlayerPrefs.SetFloat(
+                prefijoGuardado + "MuroPosY",
+                muroActual.transform.position.y);
+
+            PlayerPrefs.SetFloat(
+                prefijoGuardado + "MuroRotacion",
+                muroActual.transform.eulerAngles.z);
+        }
+
+        //--------------------------
+        // INMUNIDAD
+        //--------------------------
+
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "EsInmune",
+            esInmune ? 1 : 0);
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "TiempoInmunidad",
+            tiempoInmunidad);
+
+        //--------------------------
+        // VENENO
+        //--------------------------
+
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "Envenenado",
+            envenenado ? 1 : 0);
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "TiempoVeneno",
+            tiempoVeneno);
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "MultiplicadorVeneno",
+            multiplicadorVeneno);
 
         //--------------------------
         // GUARDAR
@@ -961,34 +1020,102 @@ public class Player : MonoBehaviour
         ActualizarUIVidas();
 
         //--------------------------
+        // INMUNIDAD
+        //--------------------------
+
+        esInmune =
+            PlayerPrefs.GetInt(
+                prefijoGuardado + "EsInmune",
+                0) == 1;
+
+        tiempoInmunidad =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "TiempoInmunidad",
+                0f);
+
+        if (esInmune && spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.cyan;
+        }
+
+        //--------------------------
+        // VENENO
+        //--------------------------
+
+        envenenado =
+            PlayerPrefs.GetInt(
+                prefijoGuardado + "Envenenado",
+                0) == 1;
+
+        tiempoVeneno =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "TiempoVeneno",
+                0f);
+
+        multiplicadorVeneno =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "MultiplicadorVeneno",
+                1f);
+
+        if (envenenado)
+        {
+            velocidadMovimiento =
+                velocidadOriginal *
+                multiplicadorVeneno;
+        }
+        else
+        {
+            velocidadMovimiento =
+                velocidadOriginal;
+        }
+
+        //--------------------------
         // POSICIÓN
         //--------------------------
 
-        // TODO:
-        // Restaurar la posición del Player.
-        //
-        // float posX =
-        //     PlayerPrefs.GetFloat(
-        //         prefijoGuardado + "PosX");
-        //
-        // float posY =
-        //     PlayerPrefs.GetFloat(
-        //         prefijoGuardado + "PosY");
-        //
-        // transform.position =
-        //     new Vector2(posX, posY);
+        float posX =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "PosX",
+                transform.position.x);
+
+        float posY =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "PosY",
+                transform.position.y);
+
+        transform.position =
+            new Vector2(posX, posY);
+
+        //--------------------------
+        // DIRECCIÓN
+        //--------------------------
+
+        float dirX =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "DireccionX",
+                1f);
+
+        float dirY =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "DireccionY",
+                0f);
+
+        ultimaDireccionMovimiento =
+            new Vector2(dirX, dirY);
+
+        if (ultimaDireccionMovimiento != Vector2.zero)
+        {
+            ultimaDireccionMovimiento.Normalize();
+        }
+
+        ultimaDireccionCardinal =
+            (DireccionCardinal)PlayerPrefs.GetInt(
+                prefijoGuardado + "DireccionCardinal",
+                (int)DireccionCardinal.Derecha);
 
         //--------------------------
         // TELETRANSPORTE
         //--------------------------
-
-        // TODO:
-        // Restaurar:
-        //
-        // cooldownTeleport
-        // teleportDisponible
-        // dirección actual
-        // demás datos necesarios.
 
         teleportDisponible =
             PlayerPrefs.GetInt(
@@ -1048,25 +1175,40 @@ public class Player : MonoBehaviour
                 prefijoGuardado + "VidaMuro",
                 vidaInicialMuro);
 
-        // TODO:
-        // Restaurar la posición del muro cuando
-        // exista el sistema de colocación.
-        //
-        // float muroX =
-        //     PlayerPrefs.GetFloat(
-        //         prefijoGuardado + "MuroPosX");
-        //
-        // float muroY =
-        //     PlayerPrefs.GetFloat(
-        //         prefijoGuardado + "MuroPosY");
-        //
-        // posicionMuro =
-        //     new Vector2(muroX, muroY);
+        float muroX =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "MuroPosX",
+                0f);
 
-        // TODO:
-        // Si muroActivo == true,
-        // volver a crear el muro utilizando
-        // posicionMuro y vidaActualMuro.
+        float muroY =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "MuroPosY",
+                0f);
+
+        float muroRotacion =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "MuroRotacion",
+                0f);
+
+        posicionMuro =
+            new Vector2(
+                muroX,
+                muroY);
+
+        if (muroActivo)
+        {
+            GameObject nuevoMuro =
+                Instantiate(
+                    prefabMuro,
+                    posicionMuro,
+                    Quaternion.Euler(0f, 0f, muroRotacion));
+
+            muroActual =
+                nuevoMuro.GetComponent<Muro>();
+
+            muroActual.RestaurarResistencia(
+                vidaActualMuro);
+        }
 
         // Restaurar el estado visual de las habilidades.
         ActualizarIconosHabilidades();
@@ -1126,4 +1268,5 @@ public class Player : MonoBehaviour
     {
         return nivelActual;
     }
+
 }

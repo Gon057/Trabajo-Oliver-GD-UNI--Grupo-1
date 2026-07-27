@@ -177,7 +177,7 @@ public class GeneradorNivel3 : GeneradorBase
                 prefabSeleccionado = discoExplosivoPrefab;
                 break;
         }
-
+        
         GameObject nuevoDisco =
             Instantiate(prefabSeleccionado,
                         posicionAleatoria,

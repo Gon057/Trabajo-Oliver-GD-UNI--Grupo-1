@@ -175,6 +175,8 @@ public class GeneradorNivel1 : GeneradorBase
 
     public void GuardarDiscos()
     {
+        ActualizarListaDiscos();
+
         PlayerPrefs.SetInt(prefijoGuardado + "CantidadDiscos", discosActivos.Count);
 
         for (int i = 0; i < discosActivos.Count; i++)

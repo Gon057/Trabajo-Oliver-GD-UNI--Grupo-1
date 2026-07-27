@@ -285,6 +285,7 @@ public class Nivel3 : MonoBehaviour
         tiempo = 0f;
         SiguienteEvento = 45f;
         player.InicializarJugador();
+        player.RestaurarPosicionInicial();
         player.ReanudarJugador();
         generadorDiscos.IniciarGeneracion();
         BotonMenu.SetActive(true);
