@@ -1718,8 +1718,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6.52, y: 5.42, z: 2}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 0.8312884, z: 0.30674848}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 564386125}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1772,12 +1772,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5918140415924512769, guid: 9643161e8b6e31b489c6ef19e9980180, type: 3}
+  m_Sprite: {fileID: 7465192895406039760, guid: da3fdcc54591cbc459dd4856df884ebc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 19.2, y: 10.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -4390,7 +4390,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -9.0000305}
+  m_AnchoredPosition: {x: 0, y: -9}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1390330130
@@ -5061,7 +5061,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -23.604645, y: -29.999985}
+  m_AnchoredPosition: {x: -23.604614, y: -30}
   m_SizeDelta: {x: 104.79071, y: 30}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1687762143
@@ -6327,7 +6327,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   velocidadMovimiento: 6
+  tiempoVeneno: 0
+  velocidadOriginal: 6
+  distanciaTeleport: 4
+  prefabMuro: {fileID: 0}
+  distanciaMuro: 1.2
+  anchoMuro: 2.114
   vidasMaximas: 3
+  duracionInmunidad: 2
   cooldownGeneral: 10
   duracionSlow: 5
   generador: {fileID: 1108706541}
