@@ -39,6 +39,8 @@ public class MainMenu : MonoBehaviour
     //Cuando empieza el juego:
     void Start()
     {
+        Time.timeScale = 1f;
+
         //Vemos si viene de un nivel
         if (PlayerPrefs.GetInt("AbrirMenuNiveles", 0) == 1)
         {

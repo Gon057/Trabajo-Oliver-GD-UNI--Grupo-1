@@ -58,14 +58,14 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float distanciaMuro = 1.2f;
 
-    const float xmin = -9.85f;//se debe cambiar
-    const float xmax = 9.85f;//se debe cambiar
+    const float xmin = -9.81f;//se debe cambiar
+    const float xmax = 9.81f;//se debe cambiar
 
-    const float ymin = -7.0f;//se debe cambiar
-    const float ymax = 7.0f;//se debe cambiar
+    const float ymin = -6.95f;//se debe cambiar
+    const float ymax = 6.95f;//se debe cambiar
 
     [SerializeField]
-    private float anchoMuro = 2.114f;
+    private float anchoMuro = 4.515f;
 
     //==================================================
     // VIDA

@@ -53,9 +53,18 @@ public class GeneradorNivel1 : GeneradorBase
         float tiempo = nivel.ObtenerTiempo();
 
         //-------------------------
-        // 0 - 30 segundos
+        // 0 - 5 segundos
+        // (Por ahora no generar discos)
         //-------------------------
-        if (tiempo < 30f)
+        if (tiempo < 5f)
+        {
+            return;
+        }
+
+        //-------------------------
+        // 5 - 55 segundos
+        //-------------------------
+        else if (tiempo < 55f)
         {
             tiempoMinimo = 2.0f;
             tiempoMaximo = 3.0f;
@@ -65,9 +74,9 @@ public class GeneradorNivel1 : GeneradorBase
         }
 
         //-------------------------
-        // 30 - 60 segundos
+        // 55 - 100 segundos
         //-------------------------
-        else if (tiempo < 60f)
+        else if (tiempo < 100f)
         {
             tiempoMinimo = 1.6f;
             tiempoMaximo = 2.3f;
@@ -77,9 +86,9 @@ public class GeneradorNivel1 : GeneradorBase
         }
 
         //-------------------------
-        // 60 - 90 segundos
+        // 100 - 145 segundos
         //-------------------------
-        else if (tiempo < 90f)
+        else if (tiempo < 145f)
         {
             tiempoMinimo = 1.2f;
             tiempoMaximo = 1.8f;
@@ -89,9 +98,9 @@ public class GeneradorNivel1 : GeneradorBase
         }
 
         //-------------------------
-        // 90 - 120 segundos
+        // 145 - 190 segundos
         //-------------------------
-        else if (tiempo < 120f)
+        else if (tiempo < 190f)
         {
             tiempoMinimo = 0.9f;
             tiempoMaximo = 1.5f;
@@ -101,7 +110,7 @@ public class GeneradorNivel1 : GeneradorBase
         }
 
         //-------------------------
-        // 120 segundos en adelante
+        // 190 segundos en adelante
         //-------------------------
         else
         {
