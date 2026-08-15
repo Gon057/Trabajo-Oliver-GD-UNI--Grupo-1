@@ -643,6 +643,7 @@ Transform:
   - {fileID: 120892992}
   - {fileID: 1715061937}
   - {fileID: 649760408}
+  - {fileID: 1828549920}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &381769376
@@ -2651,6 +2652,60 @@ RectTransform:
   m_AnchoredPosition: {x: 28.999939, y: 19.00003}
   m_SizeDelta: {x: 150, y: 36.4429}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1397780466
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1397780468}
+  - component: {fileID: 1397780467}
+  m_Layer: 0
+  m_Name: GeneradorCentro
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1397780467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1397780466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4aa373076d64ba444aa6768a5d6c1a42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GeneradorNivelPersonalizado
+  discoNormalPrefab: {fileID: 50171060979589905, guid: d2eb5da65f2df40408825a65dd30e4e8, type: 3}
+  discoRapidoPrefab: {fileID: 4057490941099617844, guid: 9fb96a94781f82343b4c8b6a1bc9ab56, type: 3}
+  discoPesadoPrefab: {fileID: 814608621932809048, guid: 93a19850cfbb14744a6c4b2b49fe4e43, type: 3}
+  discoVenenosoPrefab: {fileID: 8260086917508972029, guid: 9d3c222702f7c63469e5df895229d7de, type: 3}
+  discoExplosivoPrefab: {fileID: 3471784417505923023, guid: 3209d898a5fcd9140af28aaea1debcc3, type: 3}
+  tiempoMinimo: 5
+  tiempoMaximo: 6
+  radioGeneracion: 0.5
+  discosActivos: []
+  nivel: {fileID: 1692637116}
+--- !u!4 &1397780468
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1397780466}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.51142, y: 0.4888, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1828549920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1405659834
 GameObject:
   m_ObjectHideFlags: 0
@@ -3133,6 +3188,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2227406342488357428, guid: cd87ab320606ae149a93921387c565be, type: 3}
+      propertyPath: generador
+      value: 
+      objectReference: {fileID: 1397780467}
     - target: {fileID: 2227406342488357428, guid: cd87ab320606ae149a93921387c565be, type: 3}
       propertyPath: iconoMuro
       value: 
@@ -3675,6 +3734,7 @@ MonoBehaviour:
   musicaNivel2: {fileID: 8300000, guid: 5a6c9daba125c444b8a985582452be63, type: 3}
   musicaNivel3: {fileID: 8300000, guid: 9990320e7b7500844a9f4b8fa2d1b542, type: 3}
   sistemaEventos: {fileID: 1715061938}
+  generadorDiscos: {fileID: 1397780467}
 --- !u!1 &1715061936
 GameObject:
   m_ObjectHideFlags: 0
@@ -3720,6 +3780,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SistemaEventosNivelPersonalizado
   panelOverdrive: {fileID: 2089651956}
+  generadorDiscos: {fileID: 1397780467}
   globalLight: {fileID: 120892993}
   blackoutLight: {fileID: 381769378}
   multiplicadorOverdrive: 2
@@ -3880,6 +3941,38 @@ MonoBehaviour:
   player: {fileID: 1544583457}
   velocidadSeguimiento: 8
   fondoNivel: {fileID: 2089651956}
+--- !u!1 &1828549919
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1828549920}
+  m_Layer: 0
+  m_Name: Generadores
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1828549920
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828549919}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.26891, y: -5.96984, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1397780468}
+  m_Father: {fileID: 275296123}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1836139870
 GameObject:
   m_ObjectHideFlags: 0

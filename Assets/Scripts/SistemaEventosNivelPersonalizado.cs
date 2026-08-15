@@ -6,7 +6,7 @@ public class SistemaEventosNivelPersonalizado : MonoBehaviour
 {
     [Header("Referencias")]
     public SpriteRenderer panelOverdrive;
-    //public GeneradorNivelPersonalizado generadorDiscos;
+    public GeneradorNivelPersonalizado generadorDiscos;
 
     public Light2D globalLight;
     public Light2D blackoutLight;
@@ -143,7 +143,7 @@ public class SistemaEventosNivelPersonalizado : MonoBehaviour
         tiempoFase = 0f;
         panelOverdrive.color = colorEvento;
         Debug.Log("SistemaEventos -> Activando Overdrive");
-        //generadorDiscos.ActivarOverdrive(multiplicadorOverdrive);
+        generadorDiscos.ActivarOverdrive(multiplicadorOverdrive);
 
         // Activo
         t = 0f;
@@ -156,7 +156,7 @@ public class SistemaEventosNivelPersonalizado : MonoBehaviour
             yield return null;
         }
 
-        //generadorDiscos.DesactivarOverdrive();
+        generadorDiscos.DesactivarOverdrive();
 
         // Salida
         faseEvento = 3;
@@ -597,7 +597,7 @@ public class SistemaEventosNivelPersonalizado : MonoBehaviour
 
         if (faseEvento == 2)
         {
-            //generadorDiscos.ActivarOverdrive(multiplicadorOverdrive);
+            generadorDiscos.ActivarOverdrive(multiplicadorOverdrive);
 
             float tiempoRestante = tiempoActivo - tiempoFase;
 
@@ -611,7 +611,7 @@ public class SistemaEventosNivelPersonalizado : MonoBehaviour
                 yield return null;
             }
 
-            //generadorDiscos.DesactivarOverdrive();
+            generadorDiscos.DesactivarOverdrive();
 
             faseEvento = 3;
             tiempoFase = 0f;
@@ -825,7 +825,7 @@ public class SistemaEventosNivelPersonalizado : MonoBehaviour
         // Restaurar discos
         //---------------------------------------
 
-        //generadorDiscos.DesactivarOverdrive();
+        generadorDiscos.DesactivarOverdrive();
 
         // Restaurar luces del Blackout
 

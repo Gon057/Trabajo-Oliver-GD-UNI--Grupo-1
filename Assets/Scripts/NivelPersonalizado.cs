@@ -41,11 +41,15 @@ public class NivelPersonalizado : MonoBehaviour
     // Tiempo del próximo evento
     private float SiguienteEvento = 45f;
 
+    //Generador
+    public GeneradorNivelPersonalizado generadorDiscos;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         player.InicializarJugador();
         EstablecerConfiguracionEventos();
+        generadorDiscos.IniciarGeneracion();
 
         Time.timeScale = 1f;
 
@@ -233,6 +237,8 @@ public class NivelPersonalizado : MonoBehaviour
     //Boton para abrir el panel
     public void OpenMenuPanel()
     {
+        generadorDiscos.ActualizarListaDiscos();
+
         BotonMenu.SetActive(false);
         Time.timeScale = 0f;
         Menupanel.SetActive(true);
@@ -244,5 +250,10 @@ public class NivelPersonalizado : MonoBehaviour
         Menupanel.SetActive(false);
         Time.timeScale = 1f;
         BotonMenu.SetActive(true);
+    }
+
+    public float ObtenerTiempo()
+    {
+        return tiempo;
     }
 }
