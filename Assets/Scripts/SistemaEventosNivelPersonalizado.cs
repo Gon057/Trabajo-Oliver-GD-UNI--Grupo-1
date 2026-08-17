@@ -6,7 +6,7 @@ public class SistemaEventosNivelPersonalizado : MonoBehaviour
 {
     [Header("Referencias")]
     public SpriteRenderer panelOverdrive;
-    public GeneradorNivelPersonalizado generadorDiscos;
+    public GeneradorControlNivelPersonalizado generadorDiscos;
 
     public Light2D globalLight;
     public Light2D blackoutLight;

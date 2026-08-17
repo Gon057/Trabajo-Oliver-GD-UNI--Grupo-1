@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -42,14 +43,21 @@ public class NivelPersonalizado : MonoBehaviour
     private float SiguienteEvento = 45f;
 
     //Generador
-    public GeneradorNivelPersonalizado generadorDiscos;
+    public GeneradorControlNivelPersonalizado generadorDiscos;
+
+    IEnumerator IniciarNivel()
+    {
+        yield return null;
+
+        player.InicializarJugador();
+        EstablecerConfiguracionEventos();
+        generadorDiscos.IniciarGeneracion();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        player.InicializarJugador();
-        EstablecerConfiguracionEventos();
-        generadorDiscos.IniciarGeneracion();
+        StartCoroutine(IniciarNivel());
 
         Time.timeScale = 1f;
 

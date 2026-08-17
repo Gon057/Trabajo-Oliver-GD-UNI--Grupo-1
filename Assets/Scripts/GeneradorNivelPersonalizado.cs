@@ -24,6 +24,10 @@ public class GeneradorNivelPersonalizado : GeneradorBase
 
     // Prefijo para diferenciar datos entre niveles
     private string prefijoGuardado = "NivelPersonalizado_";
+    public void ConfigurarPrefijoGuardado(string nuevoPrefijo)
+    {
+        prefijoGuardado = nuevoPrefijo;
+    }
     private Coroutine rutinaGeneracion;
 
     private bool overdriveActivo = false;
