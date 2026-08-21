@@ -394,15 +394,15 @@ public class Nivel3 : MonoBehaviour
         PlayerPrefs.DeleteKey("PartidaGuardada" + nivelActual);
         PlayerPrefs.DeleteKey("TiempoGuardado" + nivelActual);
 
-        PlayerPrefs.DeleteKey("Nivel1_CantidadDiscos");
+        PlayerPrefs.DeleteKey("Nivel3_CantidadDiscos");
 
         for (int i = 0; i < 200; i++)
         {
-            PlayerPrefs.DeleteKey("Nivel1_Tipo_" + i);
-            PlayerPrefs.DeleteKey("Nivel1_PosX_" + i);
-            PlayerPrefs.DeleteKey("Nivel1_PosY_" + i);
-            PlayerPrefs.DeleteKey("Nivel1_DirX_" + i);
-            PlayerPrefs.DeleteKey("Nivel1_DirY_" + i);
+            PlayerPrefs.DeleteKey("Nivel3_Tipo_" + i);
+            PlayerPrefs.DeleteKey("Nivel3_PosX_" + i);
+            PlayerPrefs.DeleteKey("Nivel3_PosY_" + i);
+            PlayerPrefs.DeleteKey("Nivel3_DirX_" + i);
+            PlayerPrefs.DeleteKey("Nivel3_DirY_" + i);
         }
 
         PlayerPrefs.Save();

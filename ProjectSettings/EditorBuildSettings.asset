@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Nivel3.unity
     guid: b1c13a34e1485014496bc6d3cb0221c3
   - enabled: 1
-    path: Assets/Scenes/CreacionNivel.unity
+    path: Assets/Scenes/CreacionNivelPersonalizado.unity
     guid: 9b652f1351a05a8478383e42d3bb101a
   - enabled: 1
     path: Assets/Scenes/NivelPersonalizado.unity

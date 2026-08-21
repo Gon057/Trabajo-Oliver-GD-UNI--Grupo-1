@@ -502,4 +502,30 @@ public class GeneradorNivelPersonalizado : GeneradorBase
     {
 
     }
+
+    public void LimpiarDatosGuardado()
+    {
+        PlayerPrefs.DeleteKey(prefijoGuardado + "CantidadDiscos");
+
+        for (int i = 0; i < 200; i++)
+        {
+            PlayerPrefs.DeleteKey(prefijoGuardado + "Tipo_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "PosX_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "PosY_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "DirX_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "DirY_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "EstadoExplosion_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "TemporizadorExplosion_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "TiempoEstado_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "DanioExplosion_" + i);
+        }
+    }
 }

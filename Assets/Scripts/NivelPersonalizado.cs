@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class NivelPersonalizado : MonoBehaviour
@@ -37,6 +38,8 @@ public class NivelPersonalizado : MonoBehaviour
     private bool ovActivado;
     private bool blActivado;
     public SistemaEventosNivelPersonalizado sistemaEventos;
+    public SpriteRenderer panelOverdrive;
+    public float multiplicadorOverdrive = 2f;
 
     private int ConfigEventos;
     // Tiempo del próximo evento
@@ -45,19 +48,101 @@ public class NivelPersonalizado : MonoBehaviour
     //Generador
     public GeneradorControlNivelPersonalizado generadorDiscos;
 
+    //Variables para Guardar Partida;
+    private int nivelActual = 4;
+    public GameObject panelContinuar;
+    private bool juegoPausado = false;
+
+    [Header("Game Over")]
+    public GameObject panelGameOver;
+
+    public TextMeshProUGUI textoTiempoFinal;
+    public TextMeshProUGUI textoNivelFinal;
+
     IEnumerator IniciarNivel()
     {
         yield return null;
 
+        player.ConfigurarGuardado(nivelActual);
         player.InicializarJugador();
         EstablecerConfiguracionEventos();
         generadorDiscos.IniciarGeneracion();
     }
 
+    IEnumerator RestaurarEvento()
+    {
+        yield return null;
+
+        sistemaEventos.RestaurarEstadoEvento();
+
+        if (sistemaEventos.OverdriveActivo())
+        {
+            generadorDiscos.MostrarOverdriveVisual();
+        }
+
+        //EstablecerConfiguracionEventos();
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        StartCoroutine(IniciarNivel());
+        //------------------------------------------
+        // COMPROBAR PARTIDA GUARDADA
+        //------------------------------------------
+
+        bool continuar =
+            PlayerPrefs.GetInt("ContinuarPartida", 0) == 1 &&
+            PlayerPrefs.GetInt("PartidaGuardada" + nivelActual, 0) == 1;
+
+        //------------------------------------------
+        // PARTIDA GUARDADA
+        //------------------------------------------
+
+        if (continuar)
+        {
+            // Recuperar tiempo
+            tiempo = PlayerPrefs.GetFloat("TiempoGuardado" + nivelActual);
+
+            // RESTAURAR GENERADORES
+
+            generadorDiscos.RestaurarDiscos();
+
+            // RESTAURAR PLAYER
+
+            player.ConfigurarGuardado(nivelActual);
+            player.RestaurarJugador();
+            player.PausarJugador();
+
+            // RESTAURAR EVENTO
+
+            StartCoroutine(RestaurarEvento());
+
+            // MOSTRAR PANEL CONTINUAR
+
+            panelContinuar.SetActive(true);
+
+            // CALCULAR SIGUIENTE EVENTO
+
+            SiguienteEvento = Mathf.Floor(tiempo / 45f) * 45f + 45f;
+
+            // PAUSAR PARTIDA
+
+            juegoPausado = true;
+            BotonMenu.SetActive(false);
+
+        }
+
+
+        //------------------------------------------
+        // PARTIDA NUEVA
+        //------------------------------------------
+
+        else
+        {
+            panelContinuar.SetActive(false);
+
+            StartCoroutine(IniciarNivel());
+        }
 
         Time.timeScale = 1f;
 
@@ -86,12 +171,21 @@ public class NivelPersonalizado : MonoBehaviour
             pantallaCompletaToggle.isOn = esCompleta;
         }
         Screen.fullScreen = esCompleta;
+
+        //==========================================
+        // EVENTO DE MUERTE DEL PLAYER
+        //==========================================
+
+        player.OnPlayerMuerto += GameOver;
     }
 
     // Update is called once per frame
     void Update()
     {
-        tiempo += Time.deltaTime;
+        if (!juegoPausado)
+        {
+            tiempo += Time.deltaTime;
+        }
 
         int minutos = Mathf.FloorToInt(tiempo / 60);
         int segundos = Mathf.FloorToInt(tiempo % 60);
@@ -258,6 +352,373 @@ public class NivelPersonalizado : MonoBehaviour
         Menupanel.SetActive(false);
         Time.timeScale = 1f;
         BotonMenu.SetActive(true);
+    }
+
+    public void TerminarPartida()
+    {
+        // CERRAR MENU
+
+        BotonMenu.SetActive(false);
+        Menupanel.SetActive(true);
+
+        // MANDAR DATOS AL RANKING
+
+        PlayerPrefs.SetString(
+            "UltimoNombre",
+            PlayerPrefs.GetString("NombreJugador"));
+
+        PlayerPrefs.SetFloat(
+            "UltimoTiempo",
+            tiempo);
+
+        PlayerPrefs.SetInt(
+            "UltimoNivel",
+            nivelActual);
+
+        PlayerPrefs.SetString(
+            "UltimoTipoNivel",
+            "Personalizado");
+
+        // ABRIR MENU DE NIVELES
+
+        PlayerPrefs.SetInt(
+            "AbrirMenuNiveles",
+            1);
+
+        // ELIMINAR PARTIDA GUARDADA
+
+        PlayerPrefs.DeleteKey(
+            "PartidaGuardada" + nivelActual);
+
+        PlayerPrefs.DeleteKey(
+            "TiempoGuardado" + nivelActual);
+
+        generadorDiscos.LimpiarDatosGuardado();
+
+        //------------------------------------------
+        // GUARDAR CAMBIOS
+        //------------------------------------------
+
+        PlayerPrefs.Save();
+
+
+        //------------------------------------------
+        // IR AL MENU
+        //------------------------------------------
+
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    // GUARDAR PARTIDA
+
+    public void GuardarPartida()
+    {
+        // INDICAR PARTIDA GUARDADA
+
+        PlayerPrefs.SetInt("PartidaGuardada" + nivelActual, 1);
+
+        PlayerPrefs.SetFloat("TiempoGuardado" + nivelActual, tiempo);
+
+        // GUARDAR GENERADORES
+
+        generadorDiscos.GuardarDiscos();
+
+        // GUARDAR PLAYER
+
+        player.GuardarJugador();
+
+        // GUARDAR EVENTO
+
+        sistemaEventos.GuardarEstadoEvento();
+
+        // ABRIR MENU DE NIVELES
+
+        PlayerPrefs.SetInt("AbrirMenuNiveles",1);
+        //PlayerPrefs.Save();
+
+        // IR AL MENU
+        SceneManager.LoadScene(
+            "MainMenu");
+    }
+
+    // NO CONTINUAR PARTIDA
+
+    public void NoContinuar()
+    {
+        // ELIMINAR PARTIDA GUARDADA
+
+        PlayerPrefs.DeleteKey(
+            "PartidaGuardada" + nivelActual);
+
+        PlayerPrefs.DeleteKey(
+            "TiempoGuardado" + nivelActual);
+
+        generadorDiscos.LimpiarDatosGuardado();
+
+        // LIMPIAR DISCOS ACTUALES
+
+        generadorDiscos.LimpiarDiscos();
+
+        // REINICIAR EVENTO
+
+        sistemaEventos.ReiniciarEvento();
+
+        // REINICIAR TIEMPO
+
+        tiempo = 0f;
+
+        SiguienteEvento = 45f;
+
+        // REINICIAR PLAYER
+
+        player.InicializarJugador();
+
+        player.RestaurarPosicionInicial();
+
+        player.ReanudarJugador();
+
+        // NUEVA PARTIDA
+
+        juegoPausado = false;
+
+        panelContinuar.SetActive(false);
+
+        generadorDiscos.IniciarGeneracion();
+
+        BotonMenu.SetActive(true);
+
+        PlayerPrefs.Save();
+
+        // Ir a creación de nivel personalizado
+        SceneManager.LoadScene("CreacionNivelPersonalizado");
+    }
+
+
+    // SEGUIR PARTIDA
+
+    public void SeguirPartida()
+    {
+        // OVERDRIVE VISUAL
+
+        if (sistemaEventos.OverdriveActivo())
+        {
+            generadorDiscos.OcultarOverdriveVisual();
+        }
+
+        // REANUDAR GENERADORES
+
+        generadorDiscos.IniciarGeneracion();
+
+        generadorDiscos.ReanudarDiscos();
+
+        // CONTINUAR EVENTO
+
+        sistemaEventos.ContinuarEvento();
+
+        // REANUDAR PLAYER
+
+        player.ReanudarJugador();
+
+        // QUITAR PANEL
+
+        panelContinuar.SetActive(false);
+
+        juegoPausado = false;
+
+        BotonMenu.SetActive(true);
+    }
+
+    // VOLVER Y GUARDAR / MENU
+
+    public void VolveryGuardar()
+    {
+        PlayerPrefs.SetInt("AbrirMenuNiveles",1);
+
+        //PlayerPrefs.Save();
+
+        SceneManager.LoadScene(
+            "MainMenu");
+    }
+
+
+    //==========================================
+    // GAME OVER
+    //==========================================
+
+    public void GameOver()
+    {
+        juegoPausado = true;
+
+
+        //--------------------------------------
+        // DETENER GENERADORES
+        //--------------------------------------
+
+        generadorDiscos.DetenerGeneracion();
+
+
+        //--------------------------------------
+        // DETENER EVENTO
+        //--------------------------------------
+
+        sistemaEventos.ReiniciarEvento();
+
+
+        //--------------------------------------
+        // PAUSAR PLAYER
+        //--------------------------------------
+
+        player.PausarJugador();
+
+
+        //--------------------------------------
+        // CONGELAR JUEGO
+        //--------------------------------------
+
+        Time.timeScale = 0f;
+
+
+        //--------------------------------------
+        // MOSTRAR PANEL
+        //--------------------------------------
+
+        panelGameOver.SetActive(true);
+
+        BotonMenu.SetActive(false);
+
+
+        //--------------------------------------
+        // MOSTRAR ESTADISTICAS
+        //--------------------------------------
+
+        textoTiempoFinal.text =tiempoTexto.text;
+
+        textoNivelFinal.text = "Personalizado";
+    }
+
+
+    // REINTENTAR NIVEL
+
+    public void ReintentarNivel()
+    {
+        //--------------------------------------
+        // ENVIAR RESULTADO AL RANKING
+        //--------------------------------------
+
+        PlayerPrefs.SetString(
+            "UltimoNombre",
+            PlayerPrefs.GetString(
+                "NombreJugador"));
+
+
+        PlayerPrefs.SetFloat(
+            "UltimoTiempo",
+            tiempo);
+
+
+        PlayerPrefs.SetInt(
+            "UltimoNivel",
+            nivelActual);
+
+        PlayerPrefs.SetString(
+            "UltimoTipoNivel",
+            "Personalizado");
+
+        //--------------------------------------
+        // ELIMINAR PARTIDA GUARDADA
+        //--------------------------------------
+
+        PlayerPrefs.DeleteKey(
+            "PartidaGuardada" + nivelActual);
+
+        PlayerPrefs.DeleteKey(
+            "TiempoGuardado" + nivelActual);
+
+        generadorDiscos.LimpiarDatosGuardado();
+
+        PlayerPrefs.Save();
+
+
+        //--------------------------------------
+        // REANUDAR TIEMPO
+        //--------------------------------------
+
+        Time.timeScale = 1f;
+
+
+        //--------------------------------------
+        // REINICIAR ESCENA
+        //--------------------------------------
+
+        SceneManager.LoadScene("CreacionNivelPersonalizado");
+    }
+
+
+    // VOLVER AL MENU DESDE GAME OVER
+
+    public void VolverMenuGameOver()
+    {
+        //--------------------------------------
+        // ENVIAR RESULTADO AL RANKING
+        //--------------------------------------
+
+        PlayerPrefs.SetString(
+            "UltimoNombre",
+            PlayerPrefs.GetString(
+                "NombreJugador"));
+
+
+        PlayerPrefs.SetFloat(
+            "UltimoTiempo",
+            tiempo);
+
+
+        PlayerPrefs.SetInt(
+            "UltimoNivel",
+            nivelActual);
+
+        PlayerPrefs.SetString(
+            "UltimoTipoNivel",
+            "Personalizado");
+
+        //--------------------------------------
+        // ELIMINAR PARTIDA GUARDADA
+        //--------------------------------------
+
+        PlayerPrefs.DeleteKey(
+            "PartidaGuardada" + nivelActual);
+
+        PlayerPrefs.DeleteKey(
+            "TiempoGuardado" + nivelActual);
+
+        generadorDiscos.LimpiarDatosGuardado();
+
+
+        //--------------------------------------
+        // ABRIR MENU DE NIVELES
+        //--------------------------------------
+
+        PlayerPrefs.SetInt(
+            "AbrirMenuNiveles",
+            1);
+
+
+        PlayerPrefs.Save();
+
+
+        //--------------------------------------
+        // REANUDAR
+        //--------------------------------------
+
+        Time.timeScale = 1f;
+
+
+        //--------------------------------------
+        // IR AL MENU
+        //--------------------------------------
+
+        SceneManager.LoadScene(
+            "MainMenu");
     }
 
     public float ObtenerTiempo()

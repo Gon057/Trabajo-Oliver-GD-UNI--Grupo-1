@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class GeneradorControlNivelPersonalizado : GeneradorBase
 {
@@ -354,13 +355,25 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
 
     public void MostrarOverdriveVisual()
     {
-        // Se implementará en la Parte 3.
+        foreach (GeneradorNivelPersonalizado generador in generadoresActivos)
+        {
+            if (generador != null)
+            {
+                generador.MostrarOverdriveVisual();
+            }
+        }
     }
 
 
     public void OcultarOverdriveVisual()
     {
-        // Se implementará en la Parte 3.
+        foreach (GeneradorNivelPersonalizado generador in generadoresActivos)
+        {
+            if (generador != null)
+            {
+                generador.OcultarOverdriveVisual();
+            }
+        }
     }
 
 
@@ -497,5 +510,18 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
         Debug.Log(
             "GeneradorControl -> Todos los discos eliminados."
         );
+    }
+
+    public void LimpiarDatosGuardado()
+    {
+        generadorCentro.LimpiarDatosGuardado();
+        generadorIzquierdaArriba.LimpiarDatosGuardado();
+        generadorIzquierdaAbajo.LimpiarDatosGuardado();
+        generadorDerechaArriba.LimpiarDatosGuardado();
+        generadorDerechaAbajo.LimpiarDatosGuardado();
+
+        PlayerPrefs.Save();
+
+        Debug.Log("Datos guardados de los 5 generadores eliminados.");
     }
 }

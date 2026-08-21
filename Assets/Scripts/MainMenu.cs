@@ -35,6 +35,7 @@ public class MainMenu : MonoBehaviour
     string[] nombres = new string[6];
     float[] tiempos = new float[6];
     int[] niveles = new int[6];
+    string[] tiposNivel = new string[6];
 
     //Cuando empieza el juego:
     void Start()
@@ -111,6 +112,9 @@ public class MainMenu : MonoBehaviour
         int nuevoNivel =
             PlayerPrefs.GetInt("UltimoNivel", 0);
 
+        string nuevoTipoNivel =
+            PlayerPrefs.GetString("UltimoTipoNivel", "Nivel");
+
         // Si no hay partida nueva, simplemente mostrar el ranking actual
         if (nuevoNombre == "" || nuevoTiempo == 0)
         {
@@ -129,6 +133,8 @@ public class MainMenu : MonoBehaviour
                 PlayerPrefs.GetFloat("Tiempo" + (i + 1), 0);
             niveles[i] =
                 PlayerPrefs.GetInt("Nivel" + (i + 1), 0);
+            tiposNivel[i] =
+                PlayerPrefs.GetString("TipoNivel" + (i + 1), "Nivel");
         }
 
 
@@ -136,6 +142,7 @@ public class MainMenu : MonoBehaviour
         nombres[5] = nuevoNombre;
         tiempos[5] = nuevoTiempo;
         niveles[5] = nuevoNivel;
+        tiposNivel[5] = nuevoTipoNivel;
 
 
         // Ordenar de mayor a menor tiempo
@@ -156,6 +163,10 @@ public class MainMenu : MonoBehaviour
                     int auxNivel = niveles[i];
                     niveles[i] = niveles[j];
                     niveles[j] = auxNivel;
+
+                    string auxTipoNivel = tiposNivel[i];
+                    tiposNivel[i] = tiposNivel[j];
+                    tiposNivel[j] = auxTipoNivel;
                 }
             }
         }
@@ -175,6 +186,9 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetInt(
                 "Nivel" + (i + 1),
                 niveles[i]);
+            PlayerPrefs.SetString(
+                "TipoNivel" + (i + 1),
+                tiposNivel[i]);
         }
 
 
@@ -182,10 +196,29 @@ public class MainMenu : MonoBehaviour
         PlayerPrefs.DeleteKey("UltimoNombre");
         PlayerPrefs.DeleteKey("UltimoTiempo");
         PlayerPrefs.DeleteKey("UltimoNivel");
+        PlayerPrefs.DeleteKey("UltimoTipoNivel");
 
 
         // Mostrar el ranking actualizado
         MostrarRanking();
+    }
+
+    private string ObtenerTextoNivel(int puesto)
+    {
+        string tipo =
+            PlayerPrefs.GetString(
+                "TipoNivel" + puesto,
+                "Nivel");
+
+        if (tipo == "Personalizado")
+        {
+            return "Personalizado";
+        }
+
+        return "N" +
+            PlayerPrefs.GetInt(
+                "Nivel" + puesto,
+                0);
     }
 
     public void MostrarRanking()
@@ -193,40 +226,40 @@ public class MainMenu : MonoBehaviour
         puesto1.text =
             "1. "
             + PlayerPrefs.GetString("Nombre1", "---")
-            + "  N"
-            + PlayerPrefs.GetInt("Nivel1", 0)
+            + "  "
+            + ObtenerTextoNivel(1)
             + "  "
             + FormatoTiempo(PlayerPrefs.GetFloat("Tiempo1", 0));
 
         puesto2.text =
             "2. "
             + PlayerPrefs.GetString("Nombre2", "---")
-            + "  N"
-            + PlayerPrefs.GetInt("Nivel2", 0)
+            + "  "
+            + ObtenerTextoNivel(2)
             + "  "
             + FormatoTiempo(PlayerPrefs.GetFloat("Tiempo2", 0));
 
         puesto3.text =
             "3. "
             + PlayerPrefs.GetString("Nombre3", "---")
-            + "  N"
-            + PlayerPrefs.GetInt("Nivel3", 0)
+            + "  "
+            + ObtenerTextoNivel(3)
             + "  "
             + FormatoTiempo(PlayerPrefs.GetFloat("Tiempo3", 0));
 
         puesto4.text =
             "4. "
             + PlayerPrefs.GetString("Nombre4", "---")
-            + "  N"
-            + PlayerPrefs.GetInt("Nivel4", 0)
+            + "  "
+            + ObtenerTextoNivel(4)
             + "  "
             + FormatoTiempo(PlayerPrefs.GetFloat("Tiempo4", 0));
 
         puesto5.text =
             "5. "
             + PlayerPrefs.GetString("Nombre5", "---")
-            + "  N"
-            + PlayerPrefs.GetInt("Nivel5", 0)
+            + "  "
+            + ObtenerTextoNivel(5)
             + "  "
             + FormatoTiempo(PlayerPrefs.GetFloat("Tiempo5", 0));
     }
@@ -387,6 +420,21 @@ public class MainMenu : MonoBehaviour
     {
         PlayerPrefs.SetInt("ContinuarPartida", 1);
         SceneManager.LoadScene("Nivel3");
+    }
+
+    public void AbrirNivelPersonalizado()
+    {
+        bool partidaGuardada =
+            PlayerPrefs.GetInt("PartidaGuardada" + 4, 0) == 1;
+
+        if (partidaGuardada)
+        {
+            SceneManager.LoadScene("NivelPersonalizado");
+        }
+        else
+        {
+            SceneManager.LoadScene("CreacionNivelPersonalizado");
+        }
     }
 
 }
