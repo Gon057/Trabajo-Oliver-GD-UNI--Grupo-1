@@ -84,7 +84,7 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
     // UNITY
     //==================================================
 
-    void Start()
+    void Awake()
     {
         ConfigurarGeneradores();
         ConfigurarPrefijosGuardado();

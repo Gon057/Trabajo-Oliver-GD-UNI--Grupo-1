@@ -40,7 +40,7 @@ public class GeneradorNivelPersonalizado : GeneradorBase
     private float probabilidadTercerDisco = 0f;
     [SerializeField] public NivelPersonalizado nivel;
 
-    void Start()
+    void Awake()
     {
         EstablecerConfiguracionDiscos();
     }
@@ -246,6 +246,8 @@ public class GeneradorNivelPersonalizado : GeneradorBase
 
         Debug.Log(discosActivos.Count);
 
+        PlayerPrefs.SetInt(prefijoGuardado + "Activo", 1);
+
         PlayerPrefs.SetInt(prefijoGuardado + "CantidadDiscos", discosActivos.Count);
 
         for (int i = 0; i < discosActivos.Count; i++)
@@ -302,6 +304,19 @@ public class GeneradorNivelPersonalizado : GeneradorBase
 
     public void RestaurarDiscos()
     {
+        int activo =
+        PlayerPrefs.GetInt(
+            prefijoGuardado + "Activo",
+            0
+        );
+
+        // Este generador no pertenecía
+        // a la partida que se está restaurando.
+        if (activo == 0)
+        {
+            return;
+        }
+
         int cantidad =
             PlayerPrefs.GetInt(prefijoGuardado + "CantidadDiscos", 0);
 
@@ -505,6 +520,8 @@ public class GeneradorNivelPersonalizado : GeneradorBase
 
     public void LimpiarDatosGuardado()
     {
+        PlayerPrefs.DeleteKey(prefijoGuardado + "Activo");
+
         PlayerPrefs.DeleteKey(prefijoGuardado + "CantidadDiscos");
 
         for (int i = 0; i < 200; i++)

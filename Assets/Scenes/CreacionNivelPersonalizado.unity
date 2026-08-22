@@ -6559,6 +6559,7 @@ MonoBehaviour:
   generadorDerechaAbajo: {fileID: 1039732870}
   mensajeErrorParte2: {fileID: 1285573744}
   textoMensajeErrorParte2: {fileID: 1651431366}
+  textoBotonCrear: {fileID: 1069050055}
 --- !u!1 &1920127636
 GameObject:
   m_ObjectHideFlags: 0

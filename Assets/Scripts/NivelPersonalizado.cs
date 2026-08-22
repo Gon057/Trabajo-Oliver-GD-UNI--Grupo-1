@@ -346,6 +346,24 @@ public class NivelPersonalizado : MonoBehaviour
         Menupanel.SetActive(true);
     }
 
+    public void EditarNivel()
+    {
+        // Guardar estado actual
+        PlayerPrefs.SetInt("PartidaGuardada" + nivelActual, 1);
+        PlayerPrefs.SetFloat("TiempoGuardado" + nivelActual, tiempo);
+
+        generadorDiscos.GuardarDiscos();
+        player.GuardarJugador();
+        sistemaEventos.GuardarEstadoEvento();
+
+        // Avisar que vamos a editar
+        PlayerPrefs.SetInt("ModoEditarNivelPersonalizado", 1);
+        PlayerPrefs.Save();
+
+        // Volver a la escena de configuración
+        SceneManager.LoadScene("CreacionNivelPersonalizado");
+    }
+
     //Botones de Panel Menu
     public void VolverAlNivel()
     {
@@ -434,7 +452,7 @@ public class NivelPersonalizado : MonoBehaviour
         // ABRIR MENU DE NIVELES
 
         PlayerPrefs.SetInt("AbrirMenuNiveles",1);
-        //PlayerPrefs.Save();
+        PlayerPrefs.Save();
 
         // IR AL MENU
         SceneManager.LoadScene(
@@ -506,6 +524,8 @@ public class NivelPersonalizado : MonoBehaviour
         }
 
         // REANUDAR GENERADORES
+
+        EstablecerConfiguracionEventos();
 
         generadorDiscos.IniciarGeneracion();
 

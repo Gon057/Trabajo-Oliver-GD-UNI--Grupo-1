@@ -61,6 +61,23 @@ public class ConfiguradorNivelPersonalizado : MonoBehaviour
 
         // === NUEVO: CARGAR LA CONFIGURACIÓN AL INICIAR ===
         CargarConfiguracion();
+
+        // Comprobar si venimos a EDITAR
+        modoEdicion =
+            PlayerPrefs.GetInt("ModoEditarNivelPersonalizado", 0) == 1;
+
+        if (modoEdicion)
+        {
+            textoBotonCrear.text = "Guardar Cambios";
+
+            Debug.Log("Configurador iniciado en MODO EDICIÓN.");
+        }
+        else
+        {
+            textoBotonCrear.text = "Crear Nivel";
+
+            Debug.Log("Configurador iniciado en MODO CREACIÓN.");
+        }
     }
 
 
@@ -488,6 +505,38 @@ public class ConfiguradorNivelPersonalizado : MonoBehaviour
         // === NUEVO: GUARDAR LA CONFIGURACIÓN ANTES DE CREAR EL NIVEL ===
         GuardarConfiguracion();
 
+        if (modoEdicion)
+        {
+            // Ya terminamos de editar
+            PlayerPrefs.SetInt(
+                "ModoEditarNivelPersonalizado",
+                0
+            );
+
+            // Indicar que NivelPersonalizado debe
+            // continuar la partida guardada
+            PlayerPrefs.SetInt(
+                "ContinuarPartida",
+                1
+            );
+
+            PlayerPrefs.Save();
+
+            Debug.Log("Configuración modificada. Regresando a la partida.");
+        }
+        else
+        {
+            // Estamos creando un nivel nuevo
+            PlayerPrefs.SetInt(
+                "ModoEditarNivelPersonalizado",
+                0
+            );
+
+            PlayerPrefs.Save();
+
+            Debug.Log("Nivel personalizado creado.");
+        }
+
         SceneManager.LoadScene("NivelPersonalizado");
     }
 
@@ -559,5 +608,15 @@ public class ConfiguradorNivelPersonalizado : MonoBehaviour
 
         Debug.Log("Configuración previa cargada correctamente.");
     }
+
+    //========================================
+    // MODO EDICIÓN
+    //========================================
+
+    [Header("Modo Edición")]
+
+    public TMP_Text textoBotonCrear;
+
+    private bool modoEdicion = false;
 
 }
