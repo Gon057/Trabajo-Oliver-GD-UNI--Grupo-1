@@ -629,4 +629,10 @@ public class ConfiguradorNivelPersonalizado : MonoBehaviour
             "MainMenu");
     }
 
+    public void VolverParteOne()
+    {
+        parte2.SetActive(false);
+        parte1.SetActive(true);
+    }
+
 }

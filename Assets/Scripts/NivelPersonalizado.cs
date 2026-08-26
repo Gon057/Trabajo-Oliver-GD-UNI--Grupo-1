@@ -10,8 +10,32 @@ public class NivelPersonalizado : MonoBehaviour
 {
     //Tema de Menu de Nivel
     public GameObject Menupanel;
+    public GameObject MenuEditar;
     public GameObject BotonMenu;
     public GameObject BotonEditar;
+
+    //==========================================
+    // RESUMEN DE CONFIGURACIÓN - MENÚ
+    //==========================================
+
+    [Header("Resumen Configuración - Menú")]
+
+    public TextMeshProUGUI textoResumenDiscosMenu;
+    public TextMeshProUGUI textoResumenMusicaMenu;
+    public TextMeshProUGUI textoResumenEventosMenu;
+    public TextMeshProUGUI textoResumenGeneradoresMenu;
+
+
+    //==========================================
+    // RESUMEN DE CONFIGURACIÓN - GAME OVER
+    //==========================================
+
+    [Header("Resumen Configuración - Game Over")]
+
+    public TextMeshProUGUI textoResumenDiscosGameOver;
+    public TextMeshProUGUI textoResumenMusicaGameOver;
+    public TextMeshProUGUI textoResumenEventosGameOver;
+    public TextMeshProUGUI textoResumenGeneradoresGameOver;
 
     // Tema de Tiempo
     public TextMeshProUGUI tiempoTexto;
@@ -130,6 +154,7 @@ public class NivelPersonalizado : MonoBehaviour
 
             juegoPausado = true;
             BotonMenu.SetActive(false);
+            BotonEditar.SetActive(false);
 
         }
 
@@ -335,6 +360,36 @@ public class NivelPersonalizado : MonoBehaviour
                 sistemaEventos.EjecutarBlackout();
             }
         }
+    }
+
+    public void MenuEditarNivel()
+    {
+        generadorDiscos.ActualizarListaDiscos();
+
+
+        BotonMenu.SetActive(false);
+        BotonEditar.SetActive(false);
+        Time.timeScale = 0f;
+        // Actualizar resumen
+        MostrarResumenConfiguracion();
+
+        // Abrir menú de edición
+        MenuEditar.SetActive(true);
+    }
+
+    public void VolverAlNivelDesdeEditar()
+    {
+        // Cerrar menú de edición
+        MenuEditar.SetActive(false);
+
+        // Reabrir botón de menú
+        BotonMenu.SetActive(true);
+
+        // Reabrir botón editar
+        BotonEditar.SetActive(true);
+
+        // Continuar juego
+        Time.timeScale = 1f;
     }
 
     //Boton para abrir el panel
@@ -549,6 +604,7 @@ public class NivelPersonalizado : MonoBehaviour
         juegoPausado = false;
 
         BotonMenu.SetActive(true);
+        BotonEditar.SetActive(true);
     }
 
     // VOLVER Y GUARDAR / MENU
@@ -608,6 +664,7 @@ public class NivelPersonalizado : MonoBehaviour
         panelGameOver.SetActive(true);
 
         BotonMenu.SetActive(false);
+        BotonEditar.SetActive(false);
 
 
         //--------------------------------------
@@ -617,6 +674,10 @@ public class NivelPersonalizado : MonoBehaviour
         textoTiempoFinal.text =tiempoTexto.text;
 
         textoNivelFinal.text = "Personalizado";
+
+        // MOSTRAR RESUMEN DE CONFIGURACIÓN
+
+        MostrarResumenConfiguracion();
     }
 
 
@@ -747,5 +808,189 @@ public class NivelPersonalizado : MonoBehaviour
     public float ObtenerTiempo()
     {
         return tiempo;
+    }
+
+    //==========================================
+    // RESUMEN DE CONFIGURACIÓN
+    //==========================================
+
+    public void MostrarResumenConfiguracion()
+    {
+        //========================================
+        // DISCOS
+        //========================================
+
+        string discos = "";
+
+        if (PlayerPrefs.GetInt("Disco1", 0) == 1)
+            discos += "Normal, ";
+
+        if (PlayerPrefs.GetInt("Disco2", 0) == 1)
+            discos += "Rápido, ";
+
+        if (PlayerPrefs.GetInt("Disco3", 0) == 1)
+            discos += "Pesado, ";
+
+        if (PlayerPrefs.GetInt("Disco4", 0) == 1)
+            discos += "Venenoso, ";
+
+        if (PlayerPrefs.GetInt("Disco5", 0) == 1)
+            discos += "Explosivo, ";
+
+        // Quitar última coma
+        if (discos.EndsWith(", "))
+            discos = discos.Substring(0, discos.Length - 2);
+
+
+        //========================================
+        // MÚSICA
+        //========================================
+
+        string musica = "";
+
+        int musicaElegida =
+            PlayerPrefs.GetInt("MusicaElegida", 0);
+
+        switch (musicaElegida)
+        {
+            case 0:
+                musica = "Menú Principal";
+                break;
+
+            case 1:
+                musica = "Nivel 1";
+                break;
+
+            case 2:
+                musica = "Nivel 2";
+                break;
+
+            case 3:
+                musica = "Nivel 3";
+                break;
+
+            default:
+                musica = "Desconocida";
+                break;
+        }
+
+
+        //========================================
+        // EVENTOS
+        //========================================
+
+        string eventos = "";
+
+        bool overdrive =
+            PlayerPrefs.GetInt("EvOverdrive", 0) == 1;
+
+        bool blackout =
+            PlayerPrefs.GetInt("EvBlackout", 0) == 1;
+
+
+        if (overdrive && blackout)
+        {
+            eventos = "Overdrive y Blackout";
+        }
+        else if (overdrive)
+        {
+            eventos = "Overdrive";
+        }
+        else if (blackout)
+        {
+            eventos = "Blackout";
+        }
+        else
+        {
+            eventos = "Ninguno";
+        }
+
+
+        //========================================
+        // GENERADORES
+        //========================================
+
+        string generadores = "";
+
+        if (PlayerPrefs.GetInt("GenCentro", 0) == 1)
+            generadores += "Centro, ";
+
+        if (PlayerPrefs.GetInt("GenIzqArr", 0) == 1)
+            generadores += "Izquierda Arriba, ";
+
+        if (PlayerPrefs.GetInt("GenIzqAba", 0) == 1)
+            generadores += "Izquierda Abajo, ";
+
+        if (PlayerPrefs.GetInt("GenDerArr", 0) == 1)
+            generadores += "Derecha Arriba, ";
+
+        if (PlayerPrefs.GetInt("GenDerAba", 0) == 1)
+            generadores += "Derecha Abajo, ";
+
+        // Quitar última coma
+        if (generadores.EndsWith(", "))
+            generadores =
+                generadores.Substring(
+                    0,
+                    generadores.Length - 2
+                );
+
+
+        //========================================
+        // ACTUALIZAR RESUMEN DEL MENÚ
+        //========================================
+
+        if (textoResumenDiscosMenu != null)
+        {
+            textoResumenDiscosMenu.text =
+                "Discos: " + discos;
+        }
+
+        if (textoResumenMusicaMenu != null)
+        {
+            textoResumenMusicaMenu.text =
+                "Música: " + musica;
+        }
+
+        if (textoResumenEventosMenu != null)
+        {
+            textoResumenEventosMenu.text =
+                "Eventos: " + eventos;
+        }
+
+        if (textoResumenGeneradoresMenu != null)
+        {
+            textoResumenGeneradoresMenu.text =
+                "Generadores: " + generadores;
+        }
+
+
+        //========================================
+        // ACTUALIZAR RESUMEN DEL GAME OVER
+        //========================================
+
+        if (textoResumenDiscosGameOver != null)
+        {
+            textoResumenDiscosGameOver.text =
+                "Discos: " + discos;
+        }
+
+        if (textoResumenMusicaGameOver != null)
+        {
+            textoResumenMusicaGameOver.text =
+                "Música: " + musica;
+        }
+
+        if (textoResumenEventosGameOver != null)
+        {
+            textoResumenEventosGameOver.text =
+                "Eventos: " + eventos;
+        }
+
+        if (textoResumenGeneradoresGameOver != null)
+        {
+            textoResumenGeneradoresGameOver.text =
+                "Generadores: " + generadores;
+        }
     }
 }
