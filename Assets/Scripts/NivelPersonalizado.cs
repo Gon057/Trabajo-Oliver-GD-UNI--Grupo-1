@@ -11,6 +11,7 @@ public class NivelPersonalizado : MonoBehaviour
     //Tema de Menu de Nivel
     public GameObject Menupanel;
     public GameObject BotonMenu;
+    public GameObject BotonEditar;
 
     // Tema de Tiempo
     public TextMeshProUGUI tiempoTexto;
@@ -342,6 +343,7 @@ public class NivelPersonalizado : MonoBehaviour
         generadorDiscos.ActualizarListaDiscos();
 
         BotonMenu.SetActive(false);
+        BotonEditar.SetActive(false);
         Time.timeScale = 0f;
         Menupanel.SetActive(true);
     }
@@ -370,6 +372,7 @@ public class NivelPersonalizado : MonoBehaviour
         Menupanel.SetActive(false);
         Time.timeScale = 1f;
         BotonMenu.SetActive(true);
+        BotonEditar.SetActive(true);
     }
 
     public void TerminarPartida()

@@ -619,4 +619,14 @@ public class ConfiguradorNivelPersonalizado : MonoBehaviour
 
     private bool modoEdicion = false;
 
+    public void VolverMenu()
+    {
+        PlayerPrefs.SetInt("AbrirMenuNiveles", 1);
+
+        //PlayerPrefs.Save();
+
+        SceneManager.LoadScene(
+            "MainMenu");
+    }
+
 }

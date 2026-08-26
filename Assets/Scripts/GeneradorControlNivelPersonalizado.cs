@@ -5,6 +5,18 @@ using UnityEngine.Audio;
 public class GeneradorControlNivelPersonalizado : GeneradorBase
 {
     //==================================================
+    // PREFABS DE DISCOS
+    //==================================================
+
+    [Header("Prefabs de discos")]
+
+    public GameObject discoNormalPrefab;
+    public GameObject discoRapidoPrefab;
+    public GameObject discoPesadoPrefab;
+    public GameObject discoVenenosoPrefab;
+    public GameObject discoExplosivoPrefab;
+
+    //==================================================
     // GENERADORES
     //==================================================
 
@@ -164,6 +176,37 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
             }
         }
 
+        //==============================================
+        // CONFIGURAR PROTECCIÓN
+        //==============================================
+
+        // Primero desactivar la protección de todos
+        if (generadorCentro != null)
+            generadorCentro.ConfigurarProteccion(false);
+
+        if (generadorIzquierdaArriba != null)
+            generadorIzquierdaArriba.ConfigurarProteccion(false);
+
+        if (generadorIzquierdaAbajo != null)
+            generadorIzquierdaAbajo.ConfigurarProteccion(false);
+
+        if (generadorDerechaArriba != null)
+            generadorDerechaArriba.ConfigurarProteccion(false);
+
+        if (generadorDerechaAbajo != null)
+            generadorDerechaAbajo.ConfigurarProteccion(false);
+
+
+        // Activar protección únicamente
+        // en los generadores activos
+        foreach (GeneradorNivelPersonalizado generador
+                 in generadoresActivos)
+        {
+            if (generador != null)
+            {
+                generador.ConfigurarProteccion(true);
+            }
+        }
 
         //==============================================
         // INFORMACIÓN
@@ -282,7 +325,20 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
 
     public void ActualizarListaDiscos()
     {
-        discosActivos.Clear();
+        // Primero eliminar únicamente referencias nulas
+        // de la lista que ya controla este script.
+        for (int i = discosActivos.Count - 1; i >= 0; i--)
+        {
+            if (discosActivos[i] == null)
+            {
+                discosActivos.RemoveAt(i);
+            }
+        }
+
+
+        //==================================================
+        // RECOPILAR DISCOS NUEVOS DE LOS GENERADORES
+        //==================================================
 
         foreach (GeneradorNivelPersonalizado generador
                  in generadoresActivos)
@@ -290,17 +346,23 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
             if (generador == null)
                 continue;
 
+            // El generador limpia sus propias referencias nulas.
             generador.ActualizarListaDiscos();
 
             foreach (GameObject disco
                      in generador.discosActivos)
             {
-                if (disco != null)
+                if (disco == null)
+                    continue;
+
+                // Evitar duplicados.
+                if (!discosActivos.Contains(disco))
                 {
                     discosActivos.Add(disco);
                 }
             }
         }
+
 
         Debug.Log(
             "GeneradorControl -> Lista general actualizada. "
@@ -319,6 +381,23 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
         overdriveActivo = true;
         multiplicadorOverdrive = multiplicador;
 
+        // Asegurarnos de tener todos los discos actuales
+        ActualizarListaDiscos();
+
+        foreach (GameObject objetoDisco in discosActivos)
+        {
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco != null)
+            {
+                disco.ActivarOverdrive(multiplicador);
+            }
+        }
+
+        // Mantener informado a los generadores activos.
         foreach (GeneradorNivelPersonalizado generador
                  in generadoresActivos)
         {
@@ -339,8 +418,21 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
         overdriveActivo = false;
         multiplicadorOverdrive = 1f;
 
+        foreach (GameObject objetoDisco in discosActivos)
+        {
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco != null)
+            {
+                disco.DesactivarOverdrive();
+            }
+        }
+
         foreach (GeneradorNivelPersonalizado generador
-                 in generadoresActivos)
+             in generadoresActivos)
         {
             if (generador != null)
             {
@@ -355,11 +447,16 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
 
     public void MostrarOverdriveVisual()
     {
-        foreach (GeneradorNivelPersonalizado generador in generadoresActivos)
+        foreach (GameObject objetoDisco in discosActivos)
         {
-            if (generador != null)
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco != null)
             {
-                generador.MostrarOverdriveVisual();
+                disco.MostrarOverdriveVisual();
             }
         }
     }
@@ -367,11 +464,16 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
 
     public void OcultarOverdriveVisual()
     {
-        foreach (GeneradorNivelPersonalizado generador in generadoresActivos)
+        foreach (GameObject objetoDisco in discosActivos)
         {
-            if (generador != null)
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco != null)
             {
-                generador.OcultarOverdriveVisual();
+                disco.OcultarOverdriveVisual();
             }
         }
     }
@@ -386,8 +488,24 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
         slowActivo = true;
         multiplicadorSlow = multiplicador;
 
+        // Asegurarnos de tener todos los discos actuales
+        ActualizarListaDiscos();
+
+        foreach (GameObject objetoDisco in discosActivos)
+        {
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco != null)
+            {
+                disco.ActivarRalentizacion(multiplicador);
+            }
+        }
+
         foreach (GeneradorNivelPersonalizado generador
-                 in generadoresActivos)
+             in generadoresActivos)
         {
             if (generador != null)
             {
@@ -406,8 +524,21 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
         slowActivo = false;
         multiplicadorSlow = 1f;
 
+        foreach (GameObject objetoDisco in discosActivos)
+        {
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco != null)
+            {
+                disco.DesactivarRalentizacion();
+            }
+        }
+
         foreach (GeneradorNivelPersonalizado generador
-                 in generadoresActivos)
+             in generadoresActivos)
         {
             if (generador != null)
             {
@@ -427,81 +558,317 @@ public class GeneradorControlNivelPersonalizado : GeneradorBase
     public void GuardarDiscos()
     {
         Debug.Log(
-            "===== GUARDANDO DISCOS NIVEL PERSONALIZADO ====="
+        "===== GUARDANDO DISCOS NIVEL PERSONALIZADO ====="
+    );
+
+        // Recopilar todos los discos existentes
+        ActualizarListaDiscos();
+
+        // Marcar que existe un guardado
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "DiscosActivos",
+            1
         );
 
-        foreach (GeneradorNivelPersonalizado generador
-                 in generadoresActivos)
+        // Cantidad total de discos
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "CantidadDiscos",
+            discosActivos.Count
+        );
+
+        // Guardar cada disco
+        for (int i = 0; i < discosActivos.Count; i++)
         {
-            if (generador != null)
-            {
-                generador.GuardarDiscos();
-            }
+            GameObject objetoDisco = discosActivos[i];
+
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco == null)
+                continue;
+
+            // Tipo
+            PlayerPrefs.SetInt(
+                prefijoGuardado + "Tipo_" + i,
+                (int)disco.ObtenerTipo()
+            );
+
+            // Posición
+            PlayerPrefs.SetFloat(
+                prefijoGuardado + "PosX_" + i,
+                disco.ObtenerPosicion().x
+            );
+
+            PlayerPrefs.SetFloat(
+                prefijoGuardado + "PosY_" + i,
+                disco.ObtenerPosicion().y
+            );
+
+            // Dirección
+            PlayerPrefs.SetFloat(
+                prefijoGuardado + "DirX_" + i,
+                disco.ObtenerDireccion().x
+            );
+
+            PlayerPrefs.SetFloat(
+                prefijoGuardado + "DirY_" + i,
+                disco.ObtenerDireccion().y
+            );
+
+            // Datos especiales del explosivo
+            GuardarDatosExplosivo(disco, i);
         }
 
+        PlayerPrefs.Save();
+
         Debug.Log(
-            "GeneradorControl -> Todos los generadores guardados."
+            "GeneradorControl -> "
+            + discosActivos.Count
+            + " discos guardados correctamente."
         );
     }
 
     void GuardarDatosExplosivo(Discos disco, int indice)
     {
-        // Se implementará en la Parte 5.
+        if (disco.ObtenerTipo() != Discos.TipoDisco.Explosivo)
+            return;
+
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "EstadoExplosion_" + indice,
+            (int)disco.ObtenerEstadoExplosivo()
+        );
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "TemporizadorExplosion_" + indice,
+            disco.ObtenerTemporizadorExplosion()
+        );
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "TiempoEstado_" + indice,
+            disco.ObtenerTiempoEstado()
+        );
+
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "DanioExplosion_" + indice,
+            disco.ObtenerDanioExplosionAplicado() ? 1 : 0
+        );
     }
 
     public void RestaurarDiscos()
     {
         Debug.Log(
-           "===== RESTAURANDO DISCOS NIVEL PERSONALIZADO ====="
-       );
+        "===== RESTAURANDO DISCOS NIVEL PERSONALIZADO ====="
+    );
 
+        // Limpiar la lista general
         discosActivos.Clear();
 
-        foreach (GeneradorNivelPersonalizado generador
-                 in generadoresActivos)
+        // Comprobar si existe guardado de discos
+        int activo = PlayerPrefs.GetInt(
+            prefijoGuardado + "DiscosActivos",
+            0
+        );
+
+        if (activo == 0)
         {
-            if (generador != null)
-            {
-                generador.RestaurarDiscos();
-            }
+            Debug.Log(
+                "GeneradorControl -> No existen discos guardados."
+            );
+
+            return;
         }
 
-        ActualizarListaDiscos();
+        int cantidad = PlayerPrefs.GetInt(
+            prefijoGuardado + "CantidadDiscos",
+            0
+        );
+
+        for (int i = 0; i < cantidad; i++)
+        {
+            //========================================
+            // TIPO
+            //========================================
+
+            int tipo = PlayerPrefs.GetInt(
+                prefijoGuardado + "Tipo_" + i
+            );
+
+            GameObject prefab = ObtenerPrefabDisco(tipo);
+
+            if (prefab == null)
+            {
+                Debug.LogWarning(
+                    "GeneradorControl -> No se encontró prefab para el disco "
+                    + i
+                );
+
+                continue;
+            }
+
+            //========================================
+            // POSICIÓN
+            //========================================
+
+            Vector2 posicion = new Vector2(
+                PlayerPrefs.GetFloat(
+                    prefijoGuardado + "PosX_" + i
+                ),
+                PlayerPrefs.GetFloat(
+                    prefijoGuardado + "PosY_" + i
+                )
+            );
+
+            //========================================
+            // DIRECCIÓN
+            //========================================
+
+            Vector2 direccion = new Vector2(
+                PlayerPrefs.GetFloat(
+                    prefijoGuardado + "DirX_" + i
+                ),
+                PlayerPrefs.GetFloat(
+                    prefijoGuardado + "DirY_" + i
+                )
+            );
+
+            //========================================
+            // CREAR DISCO
+            //========================================
+
+            GameObject nuevoDisco = Instantiate(
+                prefab,
+                posicion,
+                Quaternion.identity
+            );
+
+            Discos script = nuevoDisco.GetComponent<Discos>();
+
+            if (script == null)
+            {
+                Destroy(nuevoDisco);
+                continue;
+            }
+
+            // Restaurar movimiento
+            script.RestaurarDisco(
+                posicion,
+                direccion,
+                false
+            );
+
+            // Restaurar datos del explosivo
+            RestaurarDatosExplosivo(
+                script,
+                i
+            );
+
+            // Mantenerlo pausado hasta que la partida continúe
+            script.PausarExplosivo();
+
+            // Agregar a la lista global
+            discosActivos.Add(nuevoDisco);
+        }
 
         Debug.Log(
-            "GeneradorControl -> Todos los generadores restaurados."
+            "GeneradorControl -> "
+            + discosActivos.Count
+            + " discos restaurados correctamente."
         );
+    }
+
+    GameObject ObtenerPrefabDisco(int tipo)
+    {
+        switch ((Discos.TipoDisco)tipo)
+        {
+            case Discos.TipoDisco.Normal:
+                return discoNormalPrefab;
+
+            case Discos.TipoDisco.Rapido:
+                return discoRapidoPrefab;
+
+            case Discos.TipoDisco.Pesado:
+                return discoPesadoPrefab;
+
+            case Discos.TipoDisco.Venenoso:
+                return discoVenenosoPrefab;
+
+            case Discos.TipoDisco.Explosivo:
+                return discoExplosivoPrefab;
+
+            default:
+                return null;
+        }
     }
 
     void RestaurarDatosExplosivo(Discos disco, int indice)
     {
-        // Se implementará en la Parte 5.
+        if (disco.ObtenerTipo() != Discos.TipoDisco.Explosivo)
+            return;
+
+        Discos.EstadoExplosivo estado =
+            (Discos.EstadoExplosivo)PlayerPrefs.GetInt(
+                prefijoGuardado + "EstadoExplosion_" + indice
+            );
+
+        float temporizador =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "TemporizadorExplosion_" + indice
+            );
+
+        float tiempoEstado =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "TiempoEstado_" + indice
+            );
+
+        bool danioAplicado =
+            PlayerPrefs.GetInt(
+                prefijoGuardado + "DanioExplosion_" + indice,
+                0
+            ) == 1;
+
+        disco.RestaurarEstadoExplosivo(
+            estado,
+            temporizador,
+            tiempoEstado,
+            danioAplicado
+        );
     }
 
     public void ReanudarDiscos()
     {
-        foreach (GeneradorNivelPersonalizado generador
-                 in generadoresActivos)
+        // Actualizar la lista para asegurarnos de trabajar
+        // con todos los discos existentes.
+        ActualizarListaDiscos();
+
+        foreach (GameObject objetoDisco in discosActivos)
         {
-            if (generador != null)
+            if (objetoDisco == null)
+                continue;
+
+            Discos disco = objetoDisco.GetComponent<Discos>();
+
+            if (disco != null)
             {
-                generador.ReanudarDiscos();
+                disco.ReanudarMovimiento();
+                disco.ReanudarExplosivo();
             }
         }
 
         Debug.Log(
-            "GeneradorControl -> Discos reanudados."
+            "GeneradorControl -> Discos reanudados: "
+            + discosActivos.Count
         );
     }
 
     public void LimpiarDiscos()
     {
-        foreach (GeneradorNivelPersonalizado generador
-                 in generadoresActivos)
+        foreach (GameObject objetoDisco in discosActivos)
         {
-            if (generador != null)
+            if (objetoDisco != null)
             {
-                generador.LimpiarDiscos();
+                Destroy(objetoDisco);
             }
         }
 

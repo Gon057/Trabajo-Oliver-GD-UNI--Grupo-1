@@ -53,6 +53,18 @@ public class GeneradorNivelPersonalizado : GeneradorBase
         }
     }
 
+    public void ConfigurarProteccion(bool activa)
+    {
+        BoxCollider2D collider = GetComponent<BoxCollider2D>();
+        SpriteRenderer sprite = GetComponent<SpriteRenderer>();
+
+        if (collider != null)
+            collider.enabled = activa;
+
+        if (sprite != null)
+            sprite.enabled = activa;
+    }
+
     void ActualizarDificultad()
     {
         float tiempo = nivel.ObtenerTiempo();
