@@ -2,11 +2,11 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.Rendering.Universal;
 
-public class SistemaEventosNivel3 : MonoBehaviour
+public class SistemaEventosNivelPersonalizado : MonoBehaviour
 {
     [Header("Referencias")]
     public SpriteRenderer panelOverdrive;
-    public GeneradorNivel3 generadorDiscos;
+    public GeneradorControlNivelPersonalizado generadorDiscos;
 
     public Light2D globalLight;
     public Light2D blackoutLight;
@@ -20,7 +20,7 @@ public class SistemaEventosNivel3 : MonoBehaviour
 
     [Header("Overdrive")]
     public float multiplicadorOverdrive = 2f;
-    private string prefijoEvento = "Nivel3_Evento_";
+    private string prefijoEvento = "NivelPersonalizado_Evento_";
 
     [Header("Tiempos")]
     public float tiempoEntrada = 1f;

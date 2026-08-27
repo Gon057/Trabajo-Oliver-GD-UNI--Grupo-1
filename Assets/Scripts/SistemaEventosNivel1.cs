@@ -121,7 +121,7 @@ public class SistemaEventosNivel1 : MonoBehaviour
         tiempoFase = 0f;
 
         Color colorOriginal = panelOverdrive.color;
-        Color colorEvento = new Color(1f, 0f, 0f, 0.3f);
+        Color colorEvento = new Color(1f, 0f, 0f, 1f);
 
         float t = 0f;
 
@@ -559,7 +559,7 @@ public class SistemaEventosNivel1 : MonoBehaviour
 
         // El panel YA fue restaurado con su color exacto
         Color colorActual = panelOverdrive.color;
-        Color colorEvento = new Color(1f, 0f, 0f, 0.3f);
+        Color colorEvento = new Color(1f, 0f, 0f, 1f);
 
         //---------------------------------------
         // FASE 1 : ENTRADA

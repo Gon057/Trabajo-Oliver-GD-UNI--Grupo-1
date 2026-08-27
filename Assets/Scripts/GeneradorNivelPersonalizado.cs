@@ -1,13 +1,15 @@
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
+using UnityEngine;
 
-public class GeneradorNivel2 : GeneradorBase
+public class GeneradorNivelPersonalizado : GeneradorBase
 {
     [Header("Prefabs de discos")]
     public GameObject discoNormalPrefab;
     public GameObject discoRapidoPrefab;
     public GameObject discoPesadoPrefab;
+    public GameObject discoVenenosoPrefab;
+    public GameObject discoExplosivoPrefab;
 
     [Header("Tiempo de generación")]
     public float tiempoMinimo = 0.5f;
@@ -18,9 +20,14 @@ public class GeneradorNivel2 : GeneradorBase
 
     // Lista de todos los discos activos (servirá para guardado y eventos)
     public List<GameObject> discosActivos = new List<GameObject>();
+    private bool[] tiposPermitidos = new bool[5];
 
     // Prefijo para diferenciar datos entre niveles
-    private string prefijoGuardado = "Nivel2_";
+    private string prefijoGuardado = "NivelPersonalizado_";
+    public void ConfigurarPrefijoGuardado(string nuevoPrefijo)
+    {
+        prefijoGuardado = nuevoPrefijo;
+    }
     private Coroutine rutinaGeneracion;
 
     private bool overdriveActivo = false;
@@ -31,7 +38,12 @@ public class GeneradorNivel2 : GeneradorBase
 
     private float probabilidadSegundoDisco = 0f;
     private float probabilidadTercerDisco = 0f;
-    [SerializeField] public Nivel2 nivel;
+    [SerializeField] public NivelPersonalizado nivel;
+
+    void Awake()
+    {
+        EstablecerConfiguracionDiscos();
+    }
 
     public void IniciarGeneracion()
     {
@@ -41,13 +53,16 @@ public class GeneradorNivel2 : GeneradorBase
         }
     }
 
-    public void DetenerGeneracion()
+    public void ConfigurarProteccion(bool activa)
     {
-        if (rutinaGeneracion != null)
-        {
-            StopCoroutine(rutinaGeneracion);
-            rutinaGeneracion = null;
-        }
+        BoxCollider2D collider = GetComponent<BoxCollider2D>();
+        SpriteRenderer sprite = GetComponent<SpriteRenderer>();
+
+        if (collider != null)
+            collider.enabled = activa;
+
+        if (sprite != null)
+            sprite.enabled = activa;
     }
 
     void ActualizarDificultad()
@@ -124,6 +139,24 @@ public class GeneradorNivel2 : GeneradorBase
         }
     }
 
+    public void EstablecerConfiguracionDiscos()
+    {
+        tiposPermitidos[0] = PlayerPrefs.GetInt("Disco1", 0) == 1;
+        tiposPermitidos[1] = PlayerPrefs.GetInt("Disco2", 0) == 1;
+        tiposPermitidos[2] = PlayerPrefs.GetInt("Disco3", 0) == 1;
+        tiposPermitidos[3] = PlayerPrefs.GetInt("Disco4", 0) == 1;
+        tiposPermitidos[4] = PlayerPrefs.GetInt("Disco5", 0) == 1;
+    }
+
+    public void DetenerGeneracion()
+    {
+        if (rutinaGeneracion != null)
+        {
+            StopCoroutine(rutinaGeneracion);
+            rutinaGeneracion = null;
+        }
+    }
+
     IEnumerator GenerarDiscos()
     {
         while (true)
@@ -157,8 +190,14 @@ public class GeneradorNivel2 : GeneradorBase
             (Vector2)transform.position +
             Random.insideUnitCircle * radioGeneracion;
 
+        int tipo;
+
         // Elegimos aleatoriamente el tipo de disco
-        int tipo = Random.Range(0, 3);
+        do
+        {
+            tipo = Random.Range(0, 5);
+        }
+        while (!tiposPermitidos[tipo]);
 
         GameObject prefabSeleccionado = null;
 
@@ -174,6 +213,14 @@ public class GeneradorNivel2 : GeneradorBase
 
             case 2:
                 prefabSeleccionado = discoPesadoPrefab;
+                break;
+
+            case 3:
+                prefabSeleccionado = discoVenenosoPrefab;
+                break;
+
+            case 4:
+                prefabSeleccionado = discoExplosivoPrefab;
                 break;
         }
 
@@ -205,7 +252,13 @@ public class GeneradorNivel2 : GeneradorBase
 
     public void GuardarDiscos()
     {
+        Debug.Log(discosActivos.Count);
+
         ActualizarListaDiscos();
+
+        Debug.Log(discosActivos.Count);
+
+        PlayerPrefs.SetInt(prefijoGuardado + "Activo", 1);
 
         PlayerPrefs.SetInt(prefijoGuardado + "CantidadDiscos", discosActivos.Count);
 
@@ -232,13 +285,50 @@ public class GeneradorNivel2 : GeneradorBase
             PlayerPrefs.SetFloat(
                 prefijoGuardado + "DirY_" + i,
                 disco.ObtenerDireccion().y);
+
+            GuardarDatosExplosivo(disco, i);
         }
 
         PlayerPrefs.Save();
     }
 
+    void GuardarDatosExplosivo(Discos disco, int indice)
+    {
+        if (disco.ObtenerTipo() != Discos.TipoDisco.Explosivo)
+            return;
+
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "EstadoExplosion_" + indice,
+            (int)disco.ObtenerEstadoExplosivo());
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "TemporizadorExplosion_" + indice,
+            disco.ObtenerTemporizadorExplosion());
+
+        PlayerPrefs.SetFloat(
+            prefijoGuardado + "TiempoEstado_" + indice,
+            disco.ObtenerTiempoEstado());
+
+        PlayerPrefs.SetInt(
+            prefijoGuardado + "DanioExplosion_" + indice,
+            disco.ObtenerDanioExplosionAplicado() ? 1 : 0);
+    }
+
     public void RestaurarDiscos()
     {
+        int activo =
+        PlayerPrefs.GetInt(
+            prefijoGuardado + "Activo",
+            0
+        );
+
+        // Este generador no pertenecía
+        // a la partida que se está restaurando.
+        if (activo == 0)
+        {
+            return;
+        }
+
         int cantidad =
             PlayerPrefs.GetInt(prefijoGuardado + "CantidadDiscos", 0);
 
@@ -262,6 +352,14 @@ public class GeneradorNivel2 : GeneradorBase
                 case Discos.TipoDisco.Pesado:
                     prefab = discoPesadoPrefab;
                     break;
+
+                case Discos.TipoDisco.Venenoso:
+                    prefab = discoVenenosoPrefab;
+                    break;
+
+                case Discos.TipoDisco.Explosivo:
+                    prefab = discoExplosivoPrefab;
+                    break;
             }
 
             Vector2 posicion = new Vector2(
@@ -278,9 +376,39 @@ public class GeneradorNivel2 : GeneradorBase
             Discos script = nuevoDisco.GetComponent<Discos>();
 
             script.RestaurarDisco(posicion, direccion, false);
+            RestaurarDatosExplosivo(script, i);
+            script.PausarExplosivo();
 
             discosActivos.Add(nuevoDisco);
         }
+    }
+
+    void RestaurarDatosExplosivo(Discos disco, int indice)
+    {
+        if (disco.ObtenerTipo() != Discos.TipoDisco.Explosivo)
+            return;
+
+        Discos.EstadoExplosivo estado =
+            (Discos.EstadoExplosivo)PlayerPrefs.GetInt(
+                prefijoGuardado + "EstadoExplosion_" + indice);
+
+        float temporizador =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "TemporizadorExplosion_" + indice);
+
+        float tiempoEstado =
+            PlayerPrefs.GetFloat(
+                prefijoGuardado + "TiempoEstado_" + indice);
+
+        bool danioAplicado =
+            PlayerPrefs.GetInt(
+                prefijoGuardado + "DanioExplosion_" + indice) == 1;
+
+        disco.RestaurarEstadoExplosivo(
+            estado,
+            temporizador,
+            tiempoEstado,
+            danioAplicado);
     }
 
     public void ReanudarDiscos()
@@ -291,6 +419,7 @@ public class GeneradorNivel2 : GeneradorBase
             {
                 Discos script = disco.GetComponent<Discos>();
                 script.ReanudarMovimiento();
+                script.ReanudarExplosivo();
             }
         }
     }
@@ -398,6 +527,34 @@ public class GeneradorNivel2 : GeneradorBase
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public void LimpiarDatosGuardado()
+    {
+        PlayerPrefs.DeleteKey(prefijoGuardado + "Activo");
+
+        PlayerPrefs.DeleteKey(prefijoGuardado + "CantidadDiscos");
+
+        for (int i = 0; i < 200; i++)
+        {
+            PlayerPrefs.DeleteKey(prefijoGuardado + "Tipo_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "PosX_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "PosY_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "DirX_" + i);
+            PlayerPrefs.DeleteKey(prefijoGuardado + "DirY_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "EstadoExplosion_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "TemporizadorExplosion_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "TiempoEstado_" + i);
+
+            PlayerPrefs.DeleteKey(
+                prefijoGuardado + "DanioExplosion_" + i);
+        }
     }
 }
