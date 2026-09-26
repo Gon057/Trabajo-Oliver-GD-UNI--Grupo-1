@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e89b8bf3197c8b142a36057d3730769d
+guid: dcad19808769b38428199d3c96c4827b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8902982621904699283
-    second: DiscoVenenoso_0
+      213: -3690897885470807672
+    second: "DiscoExplosivo-1\xB0Estado(3)_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DiscoVenenoso_0
+      name: "DiscoExplosivo-1\xB0Estado(3)_0"
       rect:
         serializedVersion: 2
-        x: 47
-        y: 47
-        width: 242
-        height: 242
+        x: 1
+        y: 2
+        width: 30
+        height: 28
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d6005e3b970427480800000000000000
-      internalID: -8902982621904699283
+      spriteID: 889a54aadeb47ccc0800000000000000
+      internalID: -3690897885470807672
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DiscoVenenoso_0: -8902982621904699283
+      "DiscoExplosivo-1\xB0Estado(3)_0": -3690897885470807672
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

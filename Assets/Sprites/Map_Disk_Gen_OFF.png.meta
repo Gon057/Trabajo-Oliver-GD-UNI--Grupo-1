@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8910177d809049b4aa70d71156e20e5f
+guid: 120a7b69e1ca1fb45ae5da93a2c49df1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2432264949941159505
-    second: DiscoNormal_0
+      213: 8742103750080805724
+    second: Map_Disk_Gen_OFF_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DiscoNormal_0
+      name: Map_Disk_Gen_OFF_0
       rect:
         serializedVersion: 2
-        x: 47
-        y: 47
-        width: 242
-        height: 242
+        x: 0
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 15640e4d51421c120800000000000000
-      internalID: 2432264949941159505
+      spriteID: c5b3d250b01325970800000000000000
+      internalID: 8742103750080805724
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DiscoNormal_0: 2432264949941159505
+      Map_Disk_Gen_OFF_0: 8742103750080805724
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

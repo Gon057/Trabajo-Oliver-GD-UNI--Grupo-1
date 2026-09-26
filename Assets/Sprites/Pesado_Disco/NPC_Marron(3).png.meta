@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b73cf7d506a07374ba2ceb1f919032f4
+guid: c2148ba14207e434d84c01b8533bba90
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 9197570093263323645
-    second: DiscoPesado_0
+      213: 5814014059780122051
+    second: NPC_Marron(3)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DiscoPesado_0
+      name: NPC_Marron(3)_0
       rect:
         serializedVersion: 2
-        x: 47
-        y: 47
-        width: 326
-        height: 326
+        x: 3
+        y: 3
+        width: 26
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: df187bdd44554af70800000000000000
-      internalID: 9197570093263323645
+      spriteID: 3c52250cbf68fa050800000000000000
+      internalID: 5814014059780122051
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DiscoPesado_0: 9197570093263323645
+      NPC_Marron(3)_0: 5814014059780122051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
