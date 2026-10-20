@@ -3814,11 +3814,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41851aff1b1d5b447a639e249b396172, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GeneradorNivel1
-  discoNormalPrefab: {fileID: 50171060979589905, guid: d2eb5da65f2df40408825a65dd30e4e8, type: 3}
   tiempoMinimo: 5
   tiempoMaximo: 6
   radioGeneracion: 0.5
   discosActivos: []
+  discoNormalPrefab: {fileID: 50171060979589905, guid: d2eb5da65f2df40408825a65dd30e4e8, type: 3}
   nivel: {fileID: 304645201}
 --- !u!4 &1075889206
 Transform:
@@ -3928,7 +3928,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 30
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1560955296505957673, guid: 1eb15766851f6884e8911b05694d4c42, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

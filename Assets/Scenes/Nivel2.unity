@@ -3449,13 +3449,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b437a9e010b6e1468a688f7d0a10d9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GeneradorNivel2
-  discoNormalPrefab: {fileID: 50171060979589905, guid: d2eb5da65f2df40408825a65dd30e4e8, type: 3}
-  discoRapidoPrefab: {fileID: 4057490941099617844, guid: 9fb96a94781f82343b4c8b6a1bc9ab56, type: 3}
-  discoPesadoPrefab: {fileID: 814608621932809048, guid: 93a19850cfbb14744a6c4b2b49fe4e43, type: 3}
   tiempoMinimo: 5
   tiempoMaximo: 6
   radioGeneracion: 0.5
   discosActivos: []
+  discoNormalPrefab: {fileID: 50171060979589905, guid: d2eb5da65f2df40408825a65dd30e4e8, type: 3}
+  discoRapidoPrefab: {fileID: 4057490941099617844, guid: 9fb96a94781f82343b4c8b6a1bc9ab56, type: 3}
+  discoPesadoPrefab: {fileID: 814608621932809048, guid: 93a19850cfbb14744a6c4b2b49fe4e43, type: 3}
   nivel: {fileID: 996679490}
 --- !u!4 &857517415
 Transform:
@@ -3519,7 +3519,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 30
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1560955296505957673, guid: 1eb15766851f6884e8911b05694d4c42, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
