@@ -59,7 +59,7 @@ public class Nivel1 : MonoBehaviour
     private bool registroEnCurso = false;
 
     //Metodo para Contar el Tiempo
-    void Start() 
+    void Start()
     {
         bool continuar =
         PlayerPrefs.GetInt("ContinuarPartida", 0) == 1 &&
@@ -126,8 +126,8 @@ public class Nivel1 : MonoBehaviour
 
         player.OnPlayerMuerto += GameOver;
     }
-    
-    void Update() 
+
+    void Update()
     {
         if (!juegoPausado)
         {
@@ -222,13 +222,13 @@ public class Nivel1 : MonoBehaviour
         // ========================================== 
         // PREVENIR MULTI-CLICK 
         // ==========================================
-        
-        if (registroEnCurso) 
-        { 
-            Debug.LogWarning( "Nivel1 -> Operación de ranking ya en curso. Click ignorado." );
-            return; 
-        } 
-        
+
+        if (registroEnCurso)
+        {
+            Debug.LogWarning("Nivel1 -> Operación de ranking ya en curso. Click ignorado.");
+            return;
+        }
+
         registroEnCurso = true;
 
         // ========================================== 
@@ -244,48 +244,48 @@ public class Nivel1 : MonoBehaviour
 
         string nombreJugador = PlayerPrefs.GetString("NombreJugador");
         int tiempoFinal = Mathf.FloorToInt(tiempo);
-        PlayerPrefs.SetString("UltimoNombre",nombreJugador);
-        PlayerPrefs.SetFloat("UltimoTiempo",tiempo);
-        PlayerPrefs.SetInt("UltimoNivel",nivelActual);
+        PlayerPrefs.SetString("UltimoNombre", nombreJugador);
+        PlayerPrefs.SetFloat("UltimoTiempo", tiempo);
+        PlayerPrefs.SetInt("UltimoNivel", nivelActual);
 
         //========================================== 
         // REGISTRAR EN RANKING MUNDIAL 
         //==========================================
-        if (RankingOnline.Instancia != null) 
-        { 
-            Debug.Log( "DevLog Ranking -> Iniciando registro mundial. " +
+        if (RankingOnline.Instancia != null)
+        {
+            Debug.Log("DevLog Ranking -> Iniciando registro mundial. " +
                 "Nivel: Nivel " + nivelActual +
                 " | Tiempo: " + tiempoFinal +
-                " segundos" );
-            
+                " segundos");
+
             Stopwatch cronometro = Stopwatch.StartNew();
-            
-            bool registrado = 
-                await RankingOnline.Instancia.RegistrarPartida( 
+
+            bool registrado =
+                await RankingOnline.Instancia.RegistrarPartida(
                     nombreJugador,
                     tiempoFinal,
-                    "Nivel " + nivelActual );
-            
+                    "Nivel " + nivelActual);
+
             cronometro.Stop();
-            
-            Debug.Log( "DevLog Ranking -> Registro mundial terminado. " +
+
+            Debug.Log("DevLog Ranking -> Registro mundial terminado. " +
                 "Tiempo: " +
                 cronometro.ElapsedMilliseconds +
-                " ms" 
+                " ms"
             );
-            
-            if (registrado) 
-            { 
-                Debug.Log( "DevLog Ranking -> Registro mundial EXITOSO." );
-            } 
-            else 
-            { 
-                Debug.LogWarning( "DevLog Ranking -> Registro mundial FALLIDO. " + "El ranking local se mantiene." );
-            } 
+
+            if (registrado)
+            {
+                Debug.Log("DevLog Ranking -> Registro mundial EXITOSO.");
+            }
+            else
+            {
+                Debug.LogWarning("DevLog Ranking -> Registro mundial FALLIDO. " + "El ranking local se mantiene.");
+            }
         }
         else
         {
-            Debug.LogWarning( "DevLog Ranking -> RankingOnline no encontrado. " + "Solo se guardará el ranking local." );
+            Debug.LogWarning("DevLog Ranking -> RankingOnline no encontrado. " + "Solo se guardará el ranking local.");
         }
 
         //========================================== 
@@ -379,7 +379,7 @@ public class Nivel1 : MonoBehaviour
         BotonMenu.SetActive(true);
     }
 
-    public void VolveryGuardar() 
+    public void VolveryGuardar()
     {
         PlayerPrefs.SetInt("AbrirMenuNiveles", 1);
         SceneManager.LoadScene("MainMenu");
